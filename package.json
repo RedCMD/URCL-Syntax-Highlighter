@@ -3,7 +3,7 @@
 	"displayName": "URCL & B Syntax Highlighter",
 	"publisher": "RedCMD",
 	"description": "Syntax Highlighting for URCL, B and Tuk code",
-	"version": "2.5.1",
+	"version": "2.5.2",
 	"icon": "images/URCL-logo-icon.png",
 	"engines": {
 		"vscode": "^1.47.0"
