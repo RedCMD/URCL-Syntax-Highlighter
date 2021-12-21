@@ -1,0 +1,362 @@
+{
+	"ADD": {
+		"description": "Add, 3 Opperands: ADD R1 R2|2 R3|3. Adds two values together, then it stores the result in a register.",
+		"prefix": "ADD",
+		"body": "ADD\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "ADD R1 R2 R3 - ADD R1 R2 1 - ADD R1 1 R3 - ADD R1 1 2"
+	},
+	"AND": {
+		"description": "Bitwise AND, 3 Opperands: Does a bitwise AND of two values, then it stores the result in a register.",
+		"prefix": "AND",
+		"body": "AND\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "AND R1 R2 R3 - AND R1 R2 1 - AND R1 1 R3"
+	},
+	"BEV": {
+		"description": "Branch if even, 2 Opperands: Branches to a specified address if a value is even.",
+		"prefix": "BEV",
+		"body": "BEV\t${1:.label}",
+		"comment": "BEV .foo R2 - BEV R1 R2"
+	},
+	"BGE": {
+		"description": "Branch if greater than or equal to, 3 Opperands: Branches to a specified address if one value is greater than or equal to another value.",
+		"prefix": "BGE",
+		"body": "BGE\t${1:.label}",
+		"comment": "BGE .foo R2 R3 - BGE .foo R2 1 - BGE .foo 1 R3 - BGE R1 R2 R3 - BGE R1 R2 1 - BGE R1 1 R3"
+	},
+	"BLE": {
+		"description": "Branch if less than or equal to, 3 Opperands: Branches to a specified address if one value is less than or equal to another value.",
+		"prefix": "BLE",
+		"body": "BLE\t${1:.label}",
+		"comment": "BLE .foo R2 R3 - BLE .foo R2 1 - BLE .foo 1 R3 - BLE R1 R2 R3 - BLE R1 R2 1 - BLE R1 1 R3"
+	},
+	"BNC": {
+		"description": "Branch if no carry, 3 Opperands: Branches to a specified address if one value added to another value does not activate the carryflag.",
+		"prefix": "BNC",
+		"body": "BNC\t${1:.label}",
+		"comment": "BNC .foo R2 R3 - BNC .foo R2 1 - BNC .foo 1 R3 - BNC R1 R2 R3 - BNC R1 R2 1 - BNC R1 1 R3"
+	},
+	"BNE": {
+		"description": "Branch if not equal to, 3 Opperands: Branches to a specified address if one value is equal to another value.",
+		"prefix": "BNE",
+		"body": "BNE\t${1:.label}",
+		"comment": "BNE .foo R2 R3 - BNE .foo R2 1 - BNE .foo 1 R3 - BNE R1 R2 R3 - BNE R1 R2 1 - BNE R1 1 R3"
+	},
+	"BNZ": {
+		"description": "Branch if not zero, 2 Opperands: Branches to a specified address if a value is equal to zero.",
+		"prefix": "BNZ",
+		"body": "BNZ\t${1:.label}",
+		"comment": "BNZ .foo R2 - BNZ R1 R2"
+	},
+	"BOD": {
+		"description": "Branch if odd, 2 Opperands: Branches to a specified address if a value is odd.",
+		"prefix": "BOD",
+		"body": "BOD\t${1:.label}",
+		"comment": "BOD .foo R2 - BOD R1 R2"
+	},
+	"BRC": {
+		"description": "Branch if carry, 3 Opperands: Branches to a specified address if one value added to another value activates the carry flag.",
+		"prefix": "BRC",
+		"body": "BRC\t${1:.label}",
+		"comment": "BRC .foo R2 R3 - BRC .foo R2 1 - BRC .foo 1 R3 - BRC R1 R2 R3 - BRC R1 R2 1 - BRC R1 1 R3"
+	},
+	"BRE": {
+		"description": "Branch if equal to, 3 Opperands: Branches to a specified address if one value is equal to another value.",
+		"prefix": "BRE",
+		"body": "BRE\t${1:.label}",
+		"comment": "BRE .foo R2 R3 - BRE .foo R2 1 - BRE .foo 1 R3 - BRE R1 R2 R3 - BRE R1 R2 1 - BRE R1 1 R3"
+	},
+	"BRG": {
+		"description": "Branch if greater than, 3 Opperands: Branches to a specified address if one value is less than another value.",
+		"prefix": "BRG",
+		"body": "BRG\t${1:.label}",
+		"comment": "BRG .foo R2 R3 - BRG .foo R2 1 - BRG .foo 1 R3 - BRG R1 R2 R3 - BRG R1 R2 1 - BRG R1 1 R3"
+	},
+	"BRL": {
+		"description": "Branch if less than, 3 Opperands: Branches to a specified address if one value is less than another value.",
+		"prefix": "BRL",
+		"body": "BRL\t${1:.label}",
+		"comment": "BRL .foo R2 R3 - BRL .foo R2 1 - BRL .foo 1 R3 - BRL R1 R2 R3 - BRL R1 R2 1 - BRL R1 1 R3"
+	},
+	"BRN": {
+		"description": "Branch if negative, 2 Opperands: Branches to a specified address if a value is negative.",
+		"prefix": "BRN",
+		"body": "BRN\t${1:.label}",
+		"comment": "BRN .foo R2 - BRN R1 R2"
+	},
+	"BRP": {
+		"description": "Branch if positive, 2 Opperands: Branches to a specified address if a value is positive or zero.",
+		"prefix": "BRP",
+		"body": "BRP\t${1:.label}",
+		"comment": "BRP .foo R2 - BRP R1 R2"
+	},
+	"BRZ": {
+		"description": "Branch if zero, 2 Opperands: Branches to a specified address if a value is equal to zero.",
+		"prefix": "BRZ",
+		"body": "BRZ\t${1:.label}",
+		"comment": "BRZ .foo R2 - BRZ R1 R2"
+	},
+	"BSL": {
+		"description": "Barrel shift left, 3 Opperands: Does a specific number of bitwise left shifts of a value, then it stores the result in a register.",
+		"prefix": "BSL",
+		"body": "BSL\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "BSL R1 R2 R3 - BSL R1 R2 1 - BSL R1 1 R3"
+	},
+	"BSR": {
+		"description": "Barrel shift right, 3 Opperands: Does a specific number of bitwise right shifts of a value, then it stores the result in a register.",
+		"prefix": "BSR",
+		"body": "BSR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "BSR R1 R2 R3 - BSR R1 R2 1 - BSR R1 1 R3"
+	},
+	"BSS": {
+		"description": "Barrel shift right signed, 3 Opperands: Does a specific number of signed right shifts of a value, then it stores the result in a register.",
+		"prefix": "BSS",
+		"body": "BSS\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "BSS R1 R2 R3 - BSS R1 R2 1 - BSS R1 1 R3"
+	},
+	"CAL": {
+		"description": "Call, 1 Opperands: Pushes the address of the next instruction onto the stack then it branches to a specific address.",
+		"prefix": "CAL",
+		"body": "CAL\t${1|.label,R1|}",
+		"comment": "CAL .test - CAL R1"
+	},
+	"CPY": {
+		"description": "Copy, 2 Opperands: Copies a value from the RAM at a specified address into another RAM location at another specifiedaddress.",
+		"prefix": "CPY",
+		"body": "CPY\t${1:M1}",
+		"comment": "CPY M1 M2 - CPY M1 1 - CPY M1 R2 - CPY 1 M2 - CPY 1 1 - CPY 1 R2 - CPY R1 M2 - CPY R1 1 - CPY R1 R2"
+	},
+	"DEC": {
+		"description": "Decrement, 2 Opperands: Subtracts 1 from a value then stores the result into a register.",
+		"prefix": "DEC",
+		"body": "DEC\t${1|R,$|}${2:1}\t${3:.label}",
+		"comment": "DEC R1 R2 - DEC R1 .foo"
+	},
+	"DIV": {
+		"description": "Division, 3 Opperands: Divides one value by another, then it stores the result in a register.",
+		"prefix": "DIV",
+		"body": "DIV\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "DIV R1 R2 R3 - DIV R1 R2 1 - DIV R1 1 R3"
+	},
+	"HLT": {
+		"description": "Halt, 0 Opperands: Halts execution.",
+		"prefix": "HLT",
+		"body": "HLT\n",
+		"comment": ""
+	},
+	"IMM": {
+		"description": "Immediate, 2 Opperands: Copies an immediate value into a register.",
+		"prefix": "IMM",
+		"body": "IMM\t${1|R,$|}${2:1}\t${2:2}$0",
+		"comment": "IMM R1 6"
+	},
+	"IN": {
+		"description": "In, 2 Opperands: Reads the value on a particular port and writes it into a register.",
+		"prefix": "IN",
+		"body": "IN\t${1|R,$|}${2:1}\t%${3:TEXT}",
+		"comment": "IN R1 %RNG"
+	},
+	"INC": {
+		"description": "Increment, 2 Opperands: Adds 1 to a value then stores the result into a register.",
+		"prefix": "INC",
+		"body": "INC\t${1:.label}",
+		"comment": "INC R1 R2 - INC R1 .foo"
+	},
+	"JMP": {
+		"description": "Jump, 1 Opperands: Branches to a specified value.",
+		"prefix": "JMP",
+		"body": "JMP\t${1:.label}",
+		"comment": "JMP 5 - JMP R1"
+	},
+	"LLOD": {
+		"description": "List load, 3 Opperands: Copies a value from the RAM at a specified address + offset into a register.",
+		"prefix": "LLOD",
+		"body": "LLOD\t${1:.label}",
+		"comment": "LLOD R1 R2 R3 - LLOD R1 R2 1 - LLOD R1 1 R3 - LLOD R1 .foo 2"
+	},
+	"LOD": {
+		"description": "Load, 2 Opperands: Copies a value from the RAM at a specified address into a register.",
+		"prefix": "LOD",
+		"body": "LOD\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "LOD R1 M2 - LOD R1 1 - LOD R1 R2 - LOD PC M2 - LOD PC 1 - LOD PC R2"
+	},
+	"LSH": {
+		"description": "Left shift, 2 Opperands: Does a bitwise left shift of a value, then it stores the result in a register.",
+		"prefix": "LSH",
+		"body": "LSH\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "LSH R1 R2 - LSH R1 1"
+	},
+	"LSTR": {
+		"description": "List store, 3 Opperands: Writes a value into the RAM at a specified address + offset.",
+		"prefix": "LSTR",
+		"body": "LSTR\t${1:.label}",
+		"comment": "LSTR R1 R2 R3 - LSTR R1 R2 1 - LSTR R1 1 R3 - LSTR R1 2 R3 - LSTR .foo R2 R3 - LSTR .foo R2 1 - LSTR .foo 2 R3 - LSTR .foo 2 1"
+	},
+	"MLT": {
+		"description": "Multiply, 3 Opperands: Multiplies two values together, then it stores the result in a register.",
+		"prefix": "MLT",
+		"body": "MLT\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "MLT R1 R2 R3 - MLT R1 R2 1 - MLT R1 1 R3"
+	},
+	"MOD": {
+		"description": "Modulus, 3 Opperands: Calculates the remainder left after one value is divided by another, then it stores the result in aregister.",
+		"prefix": "MOD",
+		"body": "MOD\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "MOD R1 R2 R3 - MOD R1 R2 1 - MOD R1 1 R3"
+	},
+	"MOV": {
+		"description": "Move, 2 Opperands: Copies a value into a register.",
+		"prefix": "MOV",
+		"body": "MOV\t${1:.label}",
+		"comment": "MOV R1 R2 - MOV R1 .foo"
+	},
+	"NAND": {
+		"description": "Bitwise NAND, 3 Opperands: Does a bitwise NAND of two values, then it stores the result in a register.",
+		"prefix": "NAND",
+		"body": "NAND\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "NAND R1 R2 R3 - NAND R1 R2 1 - NAND R1 1 R3"
+	},
+	"NEG": {
+		"description": "Negate, 2 Opperands: Calculates the negation of the value, interpreted as 2's compliment, then stores the result into aregister.",
+		"prefix": "NEG",
+		"body": "NEG\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "NEG R1 R2 - NEG R1 5"
+	},
+	"NOP": {
+		"description": "No operation, 0 Opperands: Does nothing.",
+		"prefix": "NOP",
+		"body": "NOP\n",
+		"comment": ""
+	},
+	"NOR": {
+		"description": "Bitwise NOR, 3 Opperands: Does a bitwise NOR of two values, then it stores the result in a register.",
+		"prefix": "NOR",
+		"body": "NOR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "NOR R1 R2 R3 - NOR R1 R2 1 - NOR R1 1 R3"
+	},
+	"NOT": {
+		"description": "Bitwise NOT, 2 Opperands: Does a bitwise NOT of a value, then it stores the result in a register.",
+		"prefix": "NOT",
+		"body": "NOT\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "NOT R1 R2 - NOT R1 1"
+	},
+	"OR": {
+		"description": "Bitwise OR, 3 Opperands: Does a bitwise OR of two values, then it stores the result in a register.",
+		"prefix": "OR",
+		"body": "OR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "OR R1 R2 R3 - OR R1 R2 1 - OR R1 1 R3"
+	},
+	"OUT": {
+		"description": "Out, 2 Opperands: Reads a value and outputs the result into a specific port.",
+		"prefix": "OUT",
+		"body": "OUT\t%${1:TEXT}",
+		"comment": "OUT %RNG R1 - OUT %RNG 5"
+	},
+	"POP": {
+		"description": "Pop, 1 Opperands: Pops a value from the stack into a register.",
+		"prefix": "POP",
+		"body": "POP\t${1|R,$|}${2:1}",
+		"comment": "POP R1"
+	},
+	"PSH": {
+		"description": "Push, 1 Opperands: Pushes a value onto the stack.",
+		"prefix": "PSH",
+		"body": "PSH\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "PSH R1 - PSH 5"
+	},
+	"RET": {
+		"description": "Return, 0 Opperands: Pops a value from the stack then it branches to that value.",
+		"prefix": "RET",
+		"body": "RET\n",
+		"comment": ""
+	},
+	"RSH": {
+		"description": "Right shift, 2 Opperands: Does a bitwise right shift of a value, then it stores the result in a register.",
+		"prefix": "RSH",
+		"body": "RSH\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "RSH R1 R2 - RSH R1 1"
+	},
+	"SETC": {
+		"description": "Set if carry, 3 Opperands: Sets a register to all 1’s in binary if one value added to another value activates the carry flag,otherwise it sets that register to 0.",
+		"prefix": "SETC",
+		"body": "SETC\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETC R1 R2 R3 - SETC R1 R2 1 - SETC R1 1 R3"
+	},
+	"SETE": {
+		"description": "Set if equal to, 3 Opperands: Sets a register to all 1’s in binary if one value is equal to another value, otherwise it sets thatregister to 0.",
+		"prefix": "SETE",
+		"body": "SETE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETE R1 R2 R3 - SETE R1 R2 1 - SETE R1 1 R3"
+	},
+	"SETG": {
+		"description": "Set if greater than, 3 Opperands: Sets a register to all 1’s in binary if one value is greater than another value, otherwise it sets thatregister to 0.",
+		"prefix": "SETG",
+		"body": "SETG\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETG R1 R2 R3 - SETG R1 R2 1 - SETG R1 1 R3"
+	},
+	"SETGE": {
+		"description": "Set if greater than or equal to, 3 Opperands: Sets a register to all 1’s in binary if one value is greater than another value, otherwise it setsthat register to 0.",
+		"prefix": "SETGE",
+		"body": "SETGE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETGE R1 R2 R3 - SETGE R1 R2 1 - SETGE R1 1 R3"
+	},
+	"SETL": {
+		"description": "Set if less than, 3 Opperands: Sets a register to all 1’s in binary if one value is less than another value, otherwise it sets thatregister to 0.",
+		"prefix": "SETL",
+		"body": "SETL\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETL R1 R2 R3 - SETL R1 R2 1 - SETL R1 1 R3"
+	},
+	"SETLE": {
+		"description": "Set if less than or equal to, 3 Opperands: Sets a register to all 1’s in binary if one value is greater than another value, otherwise it sets thatregister to 0.",
+		"prefix": "SETLE",
+		"body": "SETLE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETLE R1 R2 R3 - SETLE R1 R2 1 - SETLE R1 1 R3"
+	},
+	"SETNC": {
+		"description": "Set if no carry, 3 Opperands: Sets a register to all 1’s in binary if one value added to another value does not activate the carryflag, otherwise it sets that register to 0.",
+		"prefix": "SETNC",
+		"body": "SETNC\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETNC R1 R2 R3 - SETNC R1 R2 1 - SETNC R1 1 R3"
+	},
+	"SETNE": {
+		"description": "Set if not equal to, 3 Opperands: Sets a register to all 1’s in binary if one value is not equal to another value, otherwise it sets thatregister to 0.",
+		"prefix": "SETNE",
+		"body": "SETNE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SETNE R1 R2 R3 - SETNE R1 R2 1 - SETNE R1 1 R3"
+	},
+	"SRS": {
+		"description": "Signed right shift, 2 Opperands: Does a signed right shift of a value, then it stores the result in a register.",
+		"prefix": "SRS",
+		"body": "SRS\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SRS R1 R2 - SRS R1 1"
+	},
+	"STR": {
+		"description": "Store, 2 Opperands: Copies a value into the RAM at a specified address.",
+		"prefix": "STR",
+		"body": "STR\t${1:M1}",
+		"comment": "STR M2 R1 - STR 1 R1 - STR R1 R2 - STR M2 5 - STR 1 5 - STR R1 5"
+	},
+	"SUB": {
+		"description": "Subtract, 3 Opperands: Subtracts one values from another, then it stores the result in a register.",
+		"prefix": "SUB",
+		"body": "SUB\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "SUB R1 R2 R3 - SUB R1 R2 1 - SUB R1 1 R3 - SUB R1 1 2"
+	},
+	"XNOR": {
+		"description": "Bitwise XNOR, 3 Opperands: Does a bitwise XNOR of two values, then it stores the result in a register.",
+		"prefix": "XNOR",
+		"body": "XNOR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "XNOR R1 R2 R3 - XNOR R1 R2 1 - XNOR R1 1 R3"
+	},
+	"XOR": {
+		"description": "Bitwise XOR, 3 Opperands: Does a bitwise XOR of two values, then it stores the result in a register.",
+		"prefix": "XOR",
+		"body": "XOR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
+		"comment": "XOR R1 R2 R3 - XOR R1 R2 1 - XOR R1 1 R3"
+	},
+	"DBLE_BGE": {
+		"description": "Branch if greater than or equal to, 4 Opperands: Branches to a specified address if one value is greater than or equal to another value. Multiword version of BGE",
+		"prefix": "DBLE_BGE",
+		"body": "DBLE_BGE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}\t${1|R,$|}${2:4}$0",
+		"comment": "BGE .foo R2 R3 - BGE .foo R2 1 - BGE .foo 1 R3 - BGE R1 R2 R3 - BGE R1 R2 1 - BGE R1 1 R3"
+	}
+}

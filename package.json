@@ -1,0 +1,121 @@
+{
+	"name": "urcl-b-syntax-highlighter",
+	"displayName": "URCL & B Syntax Highlighter",
+	"publisher": "RedCMD",
+	"description": "Syntax Highlighting for URCL, B and Tuk code",
+	"version": "2.5.1",
+	"icon": "images/URCL-logo-icon.png",
+	"engines": {
+		"vscode": "^1.47.0"
+	},
+	"keywords": [
+		"tukeque",
+		"syntax highlight",
+		"b syntax",
+		"b highlight",
+		"theredcmd"
+	],
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": ".urcl",
+				"aliases": [
+					"RedCMD.URCL"
+				],
+				"extensions": [
+					".urcl"
+				],
+				"configuration": "./language-configuration-urcl.json"
+			},
+			{
+				"id": ".simple.urcl",
+				"aliases": [
+					"RedCMD.Simple.URCL"
+				],
+				"extensions": [
+					".simple.urcl",
+					".urcl"
+				],
+				"filenames": [
+					"URCL"
+				],
+				"configuration": "./language-configuration-urcl.json"
+			},
+			{
+				"id": ".b",
+				"aliases": [
+					"RedCMD.B"
+				],
+				"extensions": [
+					".b"
+				],
+				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": ".tuk",
+				"aliases": [
+					"RedCMD.Tuke"
+				],
+				"extensions": [
+					".tuk"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": ".urcl",
+				"scopeName": "redcmd.syntax.urcl",
+				"path": "./syntaxes/urcl.tmLanguage.json"
+			},
+			{
+				"language": ".simple.urcl",
+				"scopeName": "redcmd.syntax.simple.urcl",
+				"path": "./syntaxes/urcl.simple.tmLanguage.json"
+			},
+			{
+				"language": ".b",
+				"scopeName": "redcmd.syntax.b",
+				"path": "./syntaxes/b.tmLanguage.json"
+			},
+			{
+				"language": ".tuk",
+				"scopeName": "redcmd.syntax.tuk",
+				"path": "./syntaxes/tuk.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": ".urcl",
+				"path": "./snippets/urcl.json"
+			},
+			{
+				"language": ".urcl",
+				"path": "./snippets/urcl-instructions.json"
+			},
+			{
+				"language": ".simple.urcl",
+				"path": "./snippets/urcl.json"
+			},
+			{
+				"language": ".simple.urcl",
+				"path": "./snippets/urcl-instructions.json"
+			},
+			{
+				"language": ".tuk",
+				"path": "./snippets/tuk.json"
+			}
+		]
+	},
+	"__metadata": {
+		"id": "3a339f06-4d4c-4c36-93c0-6265aa3ebebf",
+		"publisherId": "6d229866-9775-4c10-9f86-f22eaa70eb66",
+		"publisherDisplayName": "RedCMD",
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1639416259160
+	}
+}

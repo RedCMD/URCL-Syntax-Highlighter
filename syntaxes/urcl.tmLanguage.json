@@ -1,0 +1,347 @@
+{
+	"name": "redcmd",
+	"scopeName": "redcmd.syntax.urcl",
+	"patterns": [
+		{ "include": "#comment-line"	},
+		{ "include": "#macro"			},
+		{ "include": "#comment-block"	},
+		{ "include": "#preprocessor"	},
+		{ "include": "#instruction"		},
+		{ "include": "#label"			},
+		{ "include": "#invalid"			}
+	],
+	"repository": {
+		"comment-line": {
+			"match": "((?:(?!/\\*).)*?)(//.*$)",
+			"captures": {
+				"1": { "patterns": [ { "include": "$self" } ] },
+				"2": { "name": "comment" }
+			}
+		},
+		"comment-block": {
+			"begin": "(.*?)(/\\*)",
+			"end": "\\*/",
+			"beginCaptures": {
+				"1": { "patterns": [ { "include": "$self" } ] },
+				"2": { "name": "comment" }
+			},
+			"endCaptures": {
+				"0": { "name": "comment" }
+			},
+			"contentName": "comment"
+		},
+		"comment-block-line": {
+			"match": "/\\*.*?\\*/",
+			"name": "comment" 
+		},
+		"label": {
+			"match": "\\.((?:(?!/[/*])\\S)*)",
+			"captures": {
+				"0": { "name": "entity.name.function" },
+				"1": { "patterns": [
+					{
+						"match": "\\w+",
+						"name": "entity.name.function"
+					},
+					{ "include": "#invalid" }
+				] }
+			}
+		},
+		"macro": {
+			"match": "(@\\w*)(?:\\s+(.+))?",
+			"captures": {
+				"1": { "name": "keyword.control" },
+				"2": { "patterns": [ { "include": "#macro-arguments" } ] }
+			}
+		},
+		"macro-arguments": {
+			"match": "(?:(?:(\\S*?)(/\\*.*?\\*/))|(\\S+))(?:\\s+(.+))?",
+			"captures": {
+				"1": { "patterns": [ { "include": "#macro-arguments" } ] },
+				"2": { "patterns": [ { "include": "#comment-block-line" } ] },
+				"3": { "patterns": [ { "include": "#string" }, { "include": "#register" }, { "include": "#immediate" }, { "include": "#invalid" } ] },
+				"4": { "patterns": [ { "include": "#macro-arguments" } ] }
+			}
+		},
+		"preprocessor": {
+			"match": "(?i)(BITS)(?:(\\S*\\s+\\S*?)([<=>]=)?(\\S*\\s+.+)?)?|(RUN)(?:(\\S*\\s+\\S*?)(R[AO]M))?|(MIN(?:HEAP|RAM|REG|STACK))(\\S*\\s+.+)?|(NAME)(?:(\\S*\\s+\\S*?)(\\w+))?",
+			"captures": {
+				"1":  { "name": "keyword.control" },
+				"2":  { "patterns": [ { "include": "#invalid" } ] },
+				"3":  { "name": "meta.embedded" },
+				"4":  { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] },
+				"5":  { "name": "keyword.control" },
+				"6":  { "patterns": [ { "include": "#invalid" } ] },
+				"7":  { "name": "meta.preprocessor.string" },
+				"8":  { "name": "keyword.control" },
+				"9":  { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] },
+				"10": { "name": "keyword.control" },
+				"11": { "patterns": [ { "include": "#invalid" } ] },
+				"12": { "name": "string" }
+			}
+		},
+		"instruction": {
+			"match": "(?i)HLT|NOP|RET|D[DQW](.*)|POP(.*)|(?:CAL|JMP|PSH)(.*)|IMM(.*)|(?:DEC|INC|[LR]SH|NEG|NOT|SRS)(.*)|B(?:OD|EV|NZ|R[NPZ])(.*)|MOV(.*)|STR(.*)|CPY(.*)|LOD(.*)|IN(.*)|OUT(.*)|(?:ADD|BS[LSR]|DIV|LLOD|MLT|MOD|N?AND|N?OR|SET(?:NC|[GLN]E|[CEGL])|SUB|XN?OR)(.*)|(?:B[GLN]E|BR[CEGL]|BNC|LSTR)(.*)|(?:DBLE_BGE)(.*)|(BRA|BZ[NR])",
+			"captures": {
+				"0":  { "name": "keyword" },
+				"1":  { "patterns": [ { "include": "#instruction-I"					}, { "include": "#invalid" } ] },
+				"2":  { "patterns": [ { "include": "#instruction-R"					}, { "include": "#invalid" } ] },
+				"3":  { "patterns": [ { "include": "#instruction-IR"				}, { "include": "#invalid" } ] },
+				"4":  { "patterns": [ { "include": "#instruction-R-I"				}, { "include": "#invalid" } ] },
+				"5":  { "patterns": [ { "include": "#instruction-R-IR"				}, { "include": "#invalid" } ] },
+				"6":  { "patterns": [ { "include": "#instruction-IR-R"				}, { "include": "#invalid" } ] },
+				"7":  { "patterns": [ { "include": "#instruction-R-IRM"				}, { "include": "#invalid" } ] },
+				"8":  { "patterns": [ { "include": "#instruction-IRM-IR"			}, { "include": "#invalid" } ] },
+				"9":  { "patterns": [ { "include": "#instruction-IRM-IRM"			}, { "include": "#invalid" } ] },
+				"10": { "patterns": [ { "include": "#instruction-RPC-IRM"			}, { "include": "#invalid" } ] },
+				"11": { "patterns": [ { "include": "#instruction-R-%"				}, { "include": "#invalid" } ] },
+				"12": { "patterns": [ { "include": "#instruction-%-IR"				}, { "include": "#invalid" } ] },
+				"13": { "patterns": [ { "include": "#instruction-R-(I-R|R-I|R-R)"	}, { "include": "#invalid" } ] },
+				"14": { "patterns": [ { "include": "#instruction-IR-(I-R|R-I|R-R)"	}, { "include": "#invalid" } ] },
+				"15": { "patterns": [ { "include": "#4-operand"						}, { "include": "#invalid" } ] },
+				"16": { "name": "markup.underline invalid" }
+			}
+		},
+		"instruction-I": {
+			"comment": "D[DQW]",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#invalid"	} ] }
+			}
+		},
+		"instruction-R": {
+			"comment": "POP",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#register"	}, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#invalid"	} ] }
+			}
+		},
+		"instruction-IR": {
+			"comment": "CAL|JMP|PSH",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#register" }, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#invalid"	} ] }
+			}
+		},
+		"instruction-IRM": {
+			"comment": "CAL|JMP|PSH",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#register" }, { "include": "#memory" }, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#invalid"	} ] }
+			}
+		},
+		"instruction-R-I": {
+			"comment": "IMM",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-I"	} ] }
+			}
+		},
+		"instruction-R-IR": {
+			"comment": "DEC|INC|[LR]SH|MOV|NEG|NOT|SRS",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-IR"	} ] }
+			}
+		},
+		"instruction-IR-R": {
+			"comment": "BOD|BEV|B[RN]Z|BR[NP]|STR",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-IR"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-R"	} ] }
+			}
+		},
+		"instruction-R-IRM": {
+			"comment": "MOV",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R"		} ] },
+				"2": { "patterns": [ { "include": "#instruction-IRM"	} ] }
+			}
+		},
+		"instruction-IRM-IR": {
+			"comment": "STR",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-IRM"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-IR"		} ] }
+			}
+		},
+		"instruction-IRM-IRM": {
+			"comment": "CPY",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-IRM"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-IRM"	} ] }
+			}
+		},
+		"instruction-RPC-IRM": {
+			"comment": "LOD",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R"		} ] },
+				"2": { "patterns": [ { "include": "#instruction-IRM"	} ] }
+			}
+		},
+		"instruction-R-(I-R|R-I|R-R)": {
+			"comment": "ADD|AND|BSL|BSS|BSR|DIV|MLT|MOD|NAND|NOR|OR|SETC|SETNC|SETE|SETG|SETGE|SETL|SETLE|SETNE|SUB|XNOR|XOR",
+			"match": "(?<=\\s)(\\S+\\s+\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R-IR"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-IR"		} ] }
+			}
+		},
+		"instruction-IR-(I-R|R-I|R-R)": {
+			"comment": "BGE|BRL|BRG|BRE|BNE|BLE|BRC|BNC|LSTR",
+			"match": "(?<=\\s)(\\S+)\\s+(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-IR"	} ] },
+				"2": { "patterns": [ { "include": "#instruction-IR"	} ] },
+				"3": { "patterns": [ { "include": "#instruction-IR"	} ] }
+			}
+		},
+		"instruction-R-%": {
+			"comment": "IN",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#instruction-R" } ] },
+				"2": { "patterns": [ { "include": "#port" }, { "include": "#invalid" } ] }
+			}
+		},
+		"instruction-%-IR": {
+			"comment": "OUT",
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#port" }, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#instruction-IR" } ] }
+			}
+		},
+		"operand": {
+			"match": "\\S+",
+			"captures": {
+				"0": { "patterns": [
+					{ "include": "#immediate"	},
+					{ "include": "#register"	},
+					{ "include": "#port"		},
+					{ "include": "#string"		}
+				] }
+			}
+		},
+		"1-operand": {
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#operand" } ] },
+				"2": { "name": "invalid" }
+			}
+		},
+		"2-operand": {
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#operand"	} ] },
+				"2": { "patterns": [ { "include": "#1-operand"	} ] }
+			}
+		},
+		"3-operand": {
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#operand"	} ] },
+				"2": { "patterns": [ { "include": "#2-operand"	} ] }
+			}
+		},
+		"4-operand": {
+			"match": "(?<=\\s)(\\S+)(.*)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#operand"	} ] },
+				"2": { "patterns": [ { "include": "#3-operand"	} ] }
+			}
+		},
+		"immediate": {
+			"match": "(?i)[\\d#M&'.+~-]\\S*",
+			"captures": {
+				"0": { "patterns": [
+					{ "include": "#numeric"	},
+					{ "include": "#memory"	},
+					{ "include": "#label"	},
+					{ "include": "#bits"	},
+					{ "include": "#char"	},
+					{ "include": "#invalid"	}
+				] }
+			}
+		},
+		"register": {
+			"match": "(?i)(?:([R$])(\\S*?)(6553[0-6]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[0-5]\\d{4}|\\d{1,4})|(SP|PC))(\\S*)",
+			"captures": {
+				"1": { "name": "variable"		},
+				"2": { "name": "invalid"		},
+				"3": { "name": "variable"		},
+				"4": { "name": "support.class"	},
+				"5": { "name": "invalid"		}
+			}
+		},
+		"memory": {
+			"match": "(?i)([M#])(\\S*?)(6553[0-6]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[0-5]\\d{4}|\\d{1,4})(\\S*)",
+			"captures": {
+				"1": { "name": "support.class"	},
+				"2": { "name": "invalid"		},
+				"3": { "name": "support.class"	},
+				"4": { "name": "invalid"		}
+			}
+		},
+		"numeric": {
+			"match": "(?i)(?:(?:~(\\S*?))?[-+](\\S*?))?(?:0(?:o(?:(\\S*?)[0-7]{1,11})?|x(?:(\\S*?)\\h{1,8})?|b(?:(\\S*?)[01]{1,32})?)|\\d{1,10})(\\S*)",
+			"captures": {
+				"0": { "name": "constant.numeric"	},
+				"1": { "name": "invalid"			},
+				"2": { "name": "invalid"			},
+				"3": { "name": "invalid"			},
+				"4": { "name": "invalid"			},
+				"5": { "name": "invalid"			},
+				"6": { "name": "invalid"			}
+			}
+		},
+		"port": {
+			"match": "(?i)(%)(?:(\\S*?)((ASCII7?|BIN|BUFFER|BUS|CHAR[56]|COLOR|CPUBUS|DATA|FIXED|FLOAT|[GMNST](?:1[0-6]|\\d)|HEX|INSTR|N?ADDR|NLEG|NOTE|NUMB|PAGE|PROFILE|RNG|SPECIAL|SUPPORTED|TEXT|UD(?:1[0-6]|\\d)|U?INT|UTF8|WAIT|X|Y)|\\w+))?(\\S*)",
+			"captures": {
+				"1": { "name": "support.class"		},
+				"2": { "name": "invalid"			},
+				"3": { "name": "support.class"		},
+				"4": { "name": "strong"				},
+				"5": { "name": "invalid"			}
+			}
+		},
+		"bits": {
+			"match": "(?i)(&)(?:(\\S*?)(BITS|S?M(?:AX|SB)|[UL]HALF))?(\\S*)",
+			"captures": {
+				"1": { "name": "keyword.control"	},
+				"2": { "name": "invalid"			},
+				"3": { "name": "keyword.control"	},
+				"4": { "name": "invalid"			}
+			}
+		},
+		"string": {
+			"match": "\".*\"",
+			"name": "string"
+		},
+		"char": {
+			"match": "'.(.*?)'",
+			"captures": {
+				"0": { "name": "string"		},
+				"1": { "name": "invalid"	}
+			}
+		},
+		"invalid": {
+			"match": "(,)|\\S",
+			"captures": {
+				"0": { "name": "invalid"			},
+				"1": { "name": "markup.underline"	}
+			}
+		}
+	}
+}

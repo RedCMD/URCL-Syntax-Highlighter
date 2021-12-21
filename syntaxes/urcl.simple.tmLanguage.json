@@ -1,0 +1,141 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Simple URCL Syntax",
+	"scopeName": "redcmd.syntax.simple.urcl",
+	"patterns": [
+		{ "include": "#test"			},
+		{ "include": "#comment-block"	},
+		{ "include": "#comment-line"	},
+		{ "include": "#preprocessor"	},
+		{ "include": "#instruction"		},
+		{ "include": "#comparison"		},
+		{ "include": "#seperator"		},
+		{ "include": "#register"		},
+		{ "include": "#memory"			},
+		{ "include": "#variable"		},
+		{ "include": "#numeric"			},
+		{ "include": "#string"			},
+		{ "include": "#label"			},
+		{ "include": "#macro"			},
+		{ "include": "#port"			},
+		{ "include": "#bits"			},
+		{ "include": "#char"			}
+	],
+	"repository": {
+		"test": {
+			"match": "a\\g<0>?b",
+			"name": "constant.character.escape"
+		},
+		"comment-block": {
+			"begin": "/\\*",
+			"end": "\\*/|(?=})",
+			"name": "comment",
+			"contentName": "comment"
+		},
+		"comment-line": {
+			"match": "//.*$",
+			"name": "comment"
+		},
+		"preprocessor": {
+			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|RAM|REG|STACK)|NAME)\\b",
+			"name": "keyword.control"
+		},
+		"instruction": {
+			"match": "\\b(?i:HLT|NOP|RET|D[DQW]|POP|CAL|JMP|PSH|IMM|DEC|INC|[LR]SH|NEG|NOT|SRS|BOD|BEV|B[NR]Z|BR[NP]|MOV|STR|CPY|LOD|IN|OUT|A[DN]D|BS[LSR]|DIV|LLOD|MLT|MOD|NAND|N?OR|SET(?:NC|[GLN]E|[CEGL])|SUB|XN?OR|B[GLN]E|BR[CEGL]|BNC|LSTR|DBLE_BGE)\\b",
+			"name": "keyword"
+		},
+		"comparison": {
+			"match": "(?<!\\S)[=<>]=?(?!\\S)",
+			"name": "keyword.operator.comparison"
+		},
+		"seperator": {
+			"match": ";",
+			"name": "punctuation.terminator.statement"
+		},
+		"register": {
+			"match": "(?i)(?<!\\w)([R$]\\d{1,4}+)\\b|\\b(SP|PC)\\b",
+			"captures": {
+				"1": { "name": "variable" },
+				"2": { "name": "support.class" }
+			}
+		},
+		"variable": {
+			"match": "(?i)\\b[A-Z]\\w*\\b",
+			"name": "variable strong"
+		},
+		"multiword-hexadecimal": {
+			"match": "(0x)(?:\\[([^]]*)])",
+			"captures": {
+				"1": { "name": "constant.numeric" },
+				"2": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid" } ] }
+			}
+		},
+		"numeric": {
+			"match": "(?<!\\w)(?:~?[-+])?(?:0(?:x(.*?)|b(.*?)|o(.*?))|(\\d.*?))\\b",
+			"captures": {
+				"0": { "name": "constant.numeric" },
+				"1": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#binary"			}, { "include": "#invalid" } ] },
+				"3": { "patterns": [ { "include": "#octal"			}, { "include": "#invalid" } ] },
+				"4": { "patterns": [ { "include": "#decimal"		}, { "include": "#invalid" } ] }
+			}
+		},
+		"hexadecimal": {
+			"match": "\\h+",
+			"name": "constant.numeric.hexidecmal"
+		},
+		"binary": {
+			"match": "[01]+",
+			"name": "constant.numeric.binary"
+		},
+		"octal": {
+			"match": "[0-7]+",
+			"name": "constant.numeric.octal"
+		},
+		"decimal": {
+			"match": "\\d+",
+			"name": "constant.numeric.decimal"
+		},
+		"memory": {
+			"match": "(?<!\\w)[#Mm]\\d+\\b",
+			"name": "support.class"
+		},
+		"string": {
+			"match": "\".*\"",
+			"name": "string"
+		},
+		"char": {
+			"match": "'.(.*?)'",
+			"captures": {
+				"0": { "name": "string" },
+				"1": { "name": "invalid" }
+			}
+		},
+		"label": {
+			"match": "(?<!\\w)\\.\\w*\\b",
+			"name": "support.function"
+		},
+		"macro": {
+			"match": "@\\w+\\b",
+			"name": "keyword.control"
+		},
+		"port": {
+			"match": "%(?i:(ASCII7?|BIN|BUFFER|BUS|CHAR[56]|COLOR|CPUBUS|DATA|FIXED|FLOAT|[GMNST](?:1[0-6]|\\d)|HEX|INSTR|N?ADDR|NLEG|NOTE|NUMB|PAGE|PROFILE|RNG|SPECIAL|SUPPORTED|TEXT|UD(?:1[0-6]|\\d)|U?INT|UTF8|WAIT|X|Y)|\\w+)\\b",
+			"captures": {
+				"0": { "name": "support.class" },
+				"1": { "name": "strong" }
+			}
+		},
+		"bits": {
+			"match": "&(?i:BITS|S?M(AX|SB)|[UL]HALF)\\b",
+			"name": "keyword.control"
+		},
+		"invalid": {
+			"match": "(,)|\\S",
+			"captures": {
+				"0": { "name": "invalid"			},
+				"1": { "name": "markup.underline"	}
+			}
+		}
+	}
+}

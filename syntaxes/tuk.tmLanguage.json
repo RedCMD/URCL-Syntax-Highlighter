@@ -1,0 +1,110 @@
+{
+	"name": "redcmd",
+	"scopeName": "redcmd.syntax.tuk",
+	"patterns": [
+		{ "include": "#comment" },
+		{ "include": "#control-statement" },
+		{ "include": "#function" },
+		{ "include": "#data-type" },
+		{ "include": "#variable" },
+		{ "include": "#number" },
+		{ "include": "#parentheses" },
+		{ "include": "#braces" },
+		{ "include": "#square-brackets" },
+		{ "include": "#operator" },
+		{ "include": "#comma" },
+		{ "include": "#semi-colon" },
+		{ "include": "#invalid" }
+	],
+	"repository": {
+		"comment": {
+			"match": "(?://|#).*$",
+			"name": "comment"
+		},
+		"parentheses": {
+			"begin": "\\(",
+			"end": "\\)",
+			"name": "parens",
+			"patterns": [ { "include": "$self" } ]
+		},
+		"braces": {
+			"begin": "\\{",
+			"end": "}",
+			"name": "braces.curly",
+			"patterns": [ { "include": "$self" } ]
+		},
+		"square-brackets": {
+			"begin": "\\[",
+			"end": "]",
+			"name": "brackets.square",
+			"patterns": [ { "include": "$self" } ]
+		},
+		"control-statement": {
+			"match": "(?<=\\s|^)(if|else|for|return)(?=\\s|$)",
+			"name": "keyword.control"
+		},
+		"function": {
+			"match": "\\b[A-Za-z_]\\w*(?=\\s*\\()",
+			"name": "entity.name.function"
+		},
+		"data-type": {
+			"match": "(?<=[(){};,\\s]|^)(function|object|array|none|num)\\b|\\b[A-Za-z_]\\w*(?=<)",
+			"name": "keyword"
+		},
+		"number": {
+			"match": "\\b(0(?:x(.*?)|b(.*?)|o(.*?))|(\\d\\S*?))\\b",
+			"captures": {
+				"1": { "name": "constant.numeric" },
+				"2": { "patterns": [ { "include": "#hexadecimal" }, { "include": "#invalid" } ] },
+				"3": { "patterns": [ { "include": "#binary" 	 }, { "include": "#invalid" } ] },
+				"4": { "patterns": [ { "include": "#octal" 		 }, { "include": "#invalid" } ] },
+				"5": { "patterns": [ { "include": "#decimal" 	 }, { "include": "#invalid" } ] }
+			}
+		},
+		"hexadecimal": {
+			"match": "[\\dA-Fa-f]+",
+			"name": "constant.numeric.hexidecmal"
+		},
+		"binary": {
+			"match": "[01]+",
+			"name": "constant.numeric.binary"
+		},
+		"octal": {
+			"match": "[0-7]+",
+			"name": "constant.numeric.octal"
+		},
+		"decimal": {
+			"match": "\\d+",
+			"name": "constant.numeric.decimal"
+		},
+		"variable": {
+			"match": "(\\b[A-Za-z_]\\w*)|((?<=\\W)\\$\\w+)",
+			"captures": {
+				"1": { "name": "variable" },
+				"2": { "name": "support.class" }
+			}
+		},
+		"operator": {
+			"match": "(<<=|>>=|->|<>|([&|<>+=-])\\2|[%&|!^*<>+=~-]=?|[/?.])([%&|!/?:^*<>+=~-]*)",
+			"captures": {
+				"1": { "name": "keyword.operator" },
+				"3": { "name": "invalid" }
+			}
+		},
+		"comma": {
+			"match": "(,)(\\s*,)*",
+			"captures": {
+				"1": { "name": "punctuation.separator.comma" },
+				"2": { "patterns": [ { "include": "#invalid" } ] }
+			}
+		},
+		"semi-colon": {
+			"match": ";",
+			"name": "punctuation.separator.semi-colon"
+		},
+		"invalid": {
+			"match": "\\S",
+			"name": "invalid"
+		}
+	}
+}

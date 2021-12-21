@@ -1,0 +1,10 @@
+{
+	"For Loop": {
+		"prefix": "for",
+		"body":[
+			"for $${1:0} < ${2:count} {",
+			"\t${0:// code}",
+			"}"
+		]
+	}
+}
