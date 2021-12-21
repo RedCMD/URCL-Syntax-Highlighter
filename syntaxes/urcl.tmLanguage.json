@@ -32,7 +32,7 @@
 		},
 		"comment-block-line": {
 			"match": "/\\*.*?\\*/",
-			"name": "comment" 
+			"name": "comment"
 		},
 		"label": {
 			"match": "\\.((?:(?!/[/*])\\S)*)",
@@ -84,7 +84,7 @@
 			"match": "(?i)HLT|NOP|RET|D[DQW](.*)|POP(.*)|(?:CAL|JMP|PSH)(.*)|IMM(.*)|(?:DEC|INC|[LR]SH|NEG|NOT|SRS)(.*)|B(?:OD|EV|NZ|R[NPZ])(.*)|MOV(.*)|STR(.*)|CPY(.*)|LOD(.*)|IN(.*)|OUT(.*)|(?:ADD|BS[LSR]|DIV|LLOD|MLT|MOD|N?AND|N?OR|SET(?:NC|[GLN]E|[CEGL])|SUB|XN?OR)(.*)|(?:B[GLN]E|BR[CEGL]|BNC|LSTR)(.*)|(?:DBLE_BGE)(.*)|(BRA|BZ[NR])",
 			"captures": {
 				"0":  { "name": "keyword" },
-				"1":  { "patterns": [ { "include": "#instruction-I"					}, { "include": "#invalid" } ] },
+				"1":  { "patterns": [ { "include": "#instruction-A"					}, { "include": "#invalid" } ] },
 				"2":  { "patterns": [ { "include": "#instruction-R"					}, { "include": "#invalid" } ] },
 				"3":  { "patterns": [ { "include": "#instruction-IR"				}, { "include": "#invalid" } ] },
 				"4":  { "patterns": [ { "include": "#instruction-R-I"				}, { "include": "#invalid" } ] },
@@ -102,8 +102,15 @@
 				"16": { "name": "markup.underline invalid" }
 			}
 		},
-		"instruction-I": {
+		"instruction-A": {
 			"comment": "D[DQW]",
+			"match": "\\s+(.+)",
+			"captures": {
+				"1": { "patterns": [ { "include": "#array" }, { "include": "#invalid" } ] }
+			}
+		},
+		"instruction-I": {
+			"comment": "",
 			"match": "(?<=\\s)(\\S+)(.*)",
 			"captures": {
 				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#invalid" } ] },
@@ -260,6 +267,14 @@
 			"captures": {
 				"1": { "patterns": [ { "include": "#operand"	} ] },
 				"2": { "patterns": [ { "include": "#3-operand"	} ] }
+			}
+		},
+		"array": {
+			"match": "(?<=\\s)([^\\s\\[]+)([^\\[]*)(?:\\[([^]]+)])?",
+			"captures": {
+				"1": { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] },
+				"2": { "patterns": [ { "include": "#invalid" } ] },
+				"3": { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] }
 			}
 		},
 		"immediate": {
