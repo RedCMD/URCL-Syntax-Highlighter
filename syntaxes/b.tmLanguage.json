@@ -55,7 +55,7 @@
 			"patterns": [ { "include": "$self" } ]
 		},
 		"control-statement": {
-			"match": "(?<=[{};]\\s*|^\\s*|(?<parens>\\))\\s*)(if|while|for|(?(<parens>)|(?<else>else)))(?=\\s*(?(<else>){|\\()|\\s*$)|\\b(if|while|for|else)\\b",
+			"match": "(?<=[{};]\\s*|^\\s*|(?<parens>\\))\\s*)(if|while|for|(?(<parens>)(?=not)possible|(?<else>else)))(?=\\s*(?(<else>){|\\()|\\s*$)|\\b(if|while|for|else)\\b",
 			"captures": {
 				"2": { "name": "keyword.control" },
 				"5": { "name": "invalid" }
