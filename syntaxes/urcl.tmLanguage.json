@@ -271,12 +271,23 @@
 			}
 		},
 		"array": {
-			"match": "(?<=\\s)([^\\s\\[]+)([^\\[]*)(?:\\[([^]]+)])?",
-			"captures": {
-				"1": { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] },
-				"2": { "patterns": [ { "include": "#invalid" } ] },
-				"3": { "patterns": [ { "include": "#numeric" }, { "include": "#invalid" } ] }
-			}
+			"patterns": [
+				{
+					"match": "(?<=\\s)([^\\s\\[]*)\\[([^]]*)]?(.*)",
+					"captures": {
+						"1": { "name": "invalid markup.underline" },
+						"2": { "patterns": [ { "include": "#numeric" }, { "include": "#char" }, { "include": "#invalid" } ] },
+						"3": { "name": "invalid" }
+					}
+				},
+				{
+					"match": "(?<=\\s)(\\S+)(.*)",
+					"captures": {
+						"1": { "patterns": [ { "include": "#numeric" }, { "include": "#char" }, { "include": "#invalid" } ] },
+						"2": { "name": "invalid" }
+					}
+				}
+			]
 		},
 		"immediate": {
 			"match": "(?i)[\\d#M&'.+~-]\\S*",

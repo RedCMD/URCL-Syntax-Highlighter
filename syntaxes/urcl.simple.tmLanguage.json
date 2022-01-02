@@ -5,6 +5,7 @@
 	"patterns": [
 		{ "include": "#comment-block"	},
 		{ "include": "#comment-line"	},
+		{ "include": "#square-bracket"	},
 		{ "include": "#preprocessor"	},
 		{ "include": "#instruction"		},
 		{ "include": "#comparison"		},
@@ -58,12 +59,9 @@
 			"match": "(?i)\\b[A-Z]\\w*\\b",
 			"name": "variable strong"
 		},
-		"multiword-hexadecimal": {
-			"match": "(0x)(?:\\[([^]]*)])",
-			"captures": {
-				"1": { "name": "constant.numeric" },
-				"2": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid" } ] }
-			}
+		"square-bracket": {
+			"match": "\\[|]",
+			"name": "entity.name.label"
 		},
 		"numeric": {
 			"match": "(?<!\\w)(?:~?[-+])?(?:0(?:x(.*?)|b(.*?)|o(.*?))|(\\d.*?))\\b",
