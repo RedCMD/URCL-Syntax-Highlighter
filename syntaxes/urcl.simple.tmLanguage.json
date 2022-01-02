@@ -67,10 +67,10 @@
 			"match": "(?<!\\w)(?:~?[-+])?(?:0(?:x(.*?)|b(.*?)|o(.*?))|(\\d.*?))\\b",
 			"captures": {
 				"0": { "name": "constant.numeric" },
-				"1": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid" } ] },
-				"2": { "patterns": [ { "include": "#binary"			}, { "include": "#invalid" } ] },
-				"3": { "patterns": [ { "include": "#octal"			}, { "include": "#invalid" } ] },
-				"4": { "patterns": [ { "include": "#decimal"		}, { "include": "#invalid" } ] }
+				"1": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid-illegal" } ] },
+				"2": { "patterns": [ { "include": "#binary"			}, { "include": "#invalid-illegal" } ] },
+				"3": { "patterns": [ { "include": "#octal"			}, { "include": "#invalid-illegal" } ] },
+				"4": { "patterns": [ { "include": "#decimal"		}, { "include": "#invalid-illegal" } ] }
 			}
 		},
 		"hexadecimal": {
@@ -101,7 +101,7 @@
 			"match": "'.(.*?)'",
 			"captures": {
 				"0": { "name": "string" },
-				"1": { "name": "invalid" }
+				"1": { "name": "invalid markup.underline" }
 			}
 		},
 		"label": {
@@ -123,12 +123,9 @@
 			"match": "&(?i:BITS|S?M(AX|SB)|[UL]HALF)\\b",
 			"name": "keyword.control"
 		},
-		"invalid": {
-			"match": "(,)|\\S",
-			"captures": {
-				"0": { "name": "invalid"			},
-				"1": { "name": "markup.underline"	}
-			}
+		"invalid-illegal": {
+			"match": "\\S",
+			"name": "invalid.illegal markup.underline"
 		}
 	}
 }
