@@ -17,7 +17,8 @@
 		"syntax highlight",
 		"b syntax",
 		"b highlight",
-		"theredcmd"
+		"theredcmd",
+		"urclpp"
 	],
 	"categories": [
 		"Programming Languages",
@@ -33,7 +34,7 @@
 				"extensions": [
 					".urcl"
 				],
-				"configuration": "./language-configuration-urcl.json"
+				"configuration": "./urcl.language-configuration.json"
 			},
 			{
 				"id": ".simple.urcl",
@@ -47,7 +48,7 @@
 				"filenames": [
 					"URCL"
 				],
-				"configuration": "./language-configuration-urcl.json"
+				"configuration": "./urcl.language-configuration.json"
 			},
 			{
 				"id": ".b",
@@ -73,22 +74,22 @@
 		"grammars": [
 			{
 				"language": ".urcl",
-				"scopeName": "redcmd.syntax.urcl",
+				"scopeName": "source.redcmd.syntax.urcl",
 				"path": "./syntaxes/urcl.tmLanguage.json"
 			},
 			{
 				"language": ".simple.urcl",
-				"scopeName": "redcmd.syntax.simple.urcl",
+				"scopeName": "source.redcmd.syntax.simple.urcl",
 				"path": "./syntaxes/urcl.simple.tmLanguage.json"
 			},
 			{
 				"language": ".b",
-				"scopeName": "redcmd.syntax.b",
+				"scopeName": "source.redcmd.syntax.b",
 				"path": "./syntaxes/b.tmLanguage.json"
 			},
 			{
 				"language": ".tuk",
-				"scopeName": "redcmd.syntax.tuk",
+				"scopeName": "source.redcmd.syntax.tuk",
 				"path": "./syntaxes/tuk.tmLanguage.json"
 			}
 		],

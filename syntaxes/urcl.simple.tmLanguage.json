@@ -1,9 +1,8 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Simple URCL Syntax",
-	"scopeName": "redcmd.syntax.simple.urcl",
+	"scopeName": "source.redcmd.syntax.simple.urcl",
 	"patterns": [
-		{ "include": "#test"			},
 		{ "include": "#comment-block"	},
 		{ "include": "#comment-line"	},
 		{ "include": "#preprocessor"	},
@@ -22,10 +21,6 @@
 		{ "include": "#char"			}
 	],
 	"repository": {
-		"test": {
-			"match": "a\\g<0>?b",
-			"name": "constant.character.escape"
-		},
 		"comment-block": {
 			"begin": "/\\*",
 			"end": "\\*/|(?=})",
