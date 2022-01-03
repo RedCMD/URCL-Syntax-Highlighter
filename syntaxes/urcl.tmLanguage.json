@@ -65,7 +65,7 @@
 			}
 		},
 		"preprocessor": {
-			"match": "(?i)(BITS)(?:(\\S*\\s+\\S*?)([<=>]=)?(\\S*\\s+.+)?)?|(RUN)(?:(\\S*\\s+\\S*?)(R[AO]M))?|(MIN(?:HEAP|RAM|REG|STACK))(\\S*\\s+.+)?|(NAME)(?:(\\S*\\s+\\S*?)(\\w+))?",
+			"match": "(?i)(BITS)(?:(\\S*\\s+\\S*?)([<=>]=)?(\\S*\\s+.+)?)?|(RUN)(?:(\\S*\\s+\\S*?)(R[AO]M))?|(MIN(?:HEAP|REG|STACK))(\\S*\\s+.+)?|(NAME)(?:(\\S*\\s+\\S*?)(\\w+))?",
 			"captures": {
 				"1":  { "name": "keyword.control" },
 				"2":  { "patterns": [ { "include": "#invalid-illegal" } ] },

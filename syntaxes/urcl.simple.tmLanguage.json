@@ -33,7 +33,7 @@
 			"name": "comment"
 		},
 		"preprocessor": {
-			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|RAM|REG|STACK)|NAME)\\b",
+			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|REG|STACK)|NAME)\\b",
 			"name": "keyword.control"
 		},
 		"instruction": {
