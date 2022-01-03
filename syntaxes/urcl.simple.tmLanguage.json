@@ -56,7 +56,7 @@
 			}
 		},
 		"variable": {
-			"match": "(?i)\\b[A-Z]\\w*\\b",
+			"match": "(?<=\\s|,)[A-Za-z]\\w*(?=[\\s;,])",
 			"name": "variable strong"
 		},
 		"square-bracket": {
