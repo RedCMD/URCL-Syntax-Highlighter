@@ -23,5 +23,16 @@
 		["[", "]"],
 		["'", "'"],
 		["\"","\""]
-	]
+	],
+	"autoCloseBefore": " \t\n",
+	"folding": {
+		"markers": {
+			"start": "^\\s*/\\*.*$",
+			"end": "^.*?\\*/\\s*$"
+		}
+	},
+	"indentationRules": {
+		"increaseIndentPattern": "^\\s*(\\.|BITS|D[DW]|MIN(REG|HEAP|STACK)|RUN)",
+		"decreaseIndentPattern": "^\\s*(\\.|BITS|D[DW]|MIN(REG|HEAP|STACK)|RUN)"
+	}
 }
