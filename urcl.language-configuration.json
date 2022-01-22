@@ -31,8 +31,8 @@
 		}
 	},
 	"indentationRules": {
-		"increaseIndentPattern": "^\\s*(\\.|BITS|D[DW]|MIN(REG|HEAP|STACK)|RUN)",
-		"decreaseIndentPattern": "^\\s*(\\.|BITS|D[DW]|MIN(REG|HEAP|STACK)|RUN)"
+		"increaseIndentPattern": "^\\s*(\\.|[Bb][Ii][Tt][Ss]|[Dd][DdWw]|[Mm][Ii][Nn]([Rr][Ee][Gg]|[Hh][Ee][Aa][Pp]|[Ss][Tt][Aa][Cc][Kk])|[Rr][Uu][Nn])",
+		"decreaseIndentPattern": "^\\s*(\\.|[Bb][Ii][Tt][Ss]|[Dd][DdWw]|[Mm][Ii][Nn]([Rr][Ee][Gg]|[Hh][Ee][Aa][Pp]|[Ss][Tt][Aa][Cc][Kk])|[Rr][Uu][Nn])"
 	},
-	"wordPattern": "((?<=^\\s*(\\*/)?\\s*)([a-zA-Z]+|@\\w*)|(?<=^|\\s|\\*/)\\.\\w*|(?<=\\s|\\*/)([#Mm][0-9]*|%\\w*|&[a-zA-Z]*|[$Rr]\\d?|(0[box])?[0-9]+))(?=\\s|$|/[*/])"
+	"wordPattern": "((?<=^\\s*(\\*/)?\\s*)([a-zA-Z]+|@\\w*)|(?<=^|\\s|\\*/)\\.\\w*|(?<=\\s|\\*/)([#Mm][0-9]*|%\\w*|&[a-zA-Z]*|[$Rr]\\d?|(0[box])?\\d+))(?=\\s|$|/[*/])"
 }
