@@ -103,10 +103,11 @@
 			"name": "string"
 		},
 		"char": {
-			"match": "'.(.*?)'",
+			"match": "'(?>(\\\\[n])|.)(.*?)'",
 			"captures": {
 				"0": { "name": "string" },
-				"1": { "name": "invalid markup.underline" }
+				"1": { "name": "constant.character.escape" },
+				"2": { "name": "invalid markup.underline" }
 			}
 		},
 		"label": {
