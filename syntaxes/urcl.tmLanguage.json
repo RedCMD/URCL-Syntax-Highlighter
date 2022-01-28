@@ -48,6 +48,10 @@
 				] }
 			}
 		},
+		"macros": {
+			"match": "(@\\w*)",
+			"name": "keyword.control"
+		},
 		"macro": {
 			"match": "(@\\w*)(?:\\s+(.+))?",
 			"captures": {
@@ -114,7 +118,7 @@
 			"comment": "",
 			"match": "(?<=\\s)(\\S+)(.*)",
 			"captures": {
-				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#invalid-illegal" } ] },
+				"1": { "patterns": [ { "include": "#immediate"	}, { "include": "#macros" }, { "include": "#invalid-illegal" } ] },
 				"2": { "name": "invalid" }
 			}
 		},
@@ -122,7 +126,7 @@
 			"comment": "POP",
 			"match": "(?<=\\s)(\\S+)(.*)",
 			"captures": {
-				"1": { "patterns": [ { "include": "#register" }, { "include": "#invalid-illegal" } ] },
+				"1": { "patterns": [ { "include": "#register" }, { "include": "#macros" }, { "include": "#invalid-illegal" } ] },
 				"2": { "name": "invalid" }
 			}
 		},
@@ -130,7 +134,7 @@
 			"comment": "CAL|JMP|PSH",
 			"match": "(?<=\\s)(\\S+)(.*)",
 			"captures": {
-				"1": { "patterns": [ { "include": "#immediate" }, { "include": "#register" }, { "include": "#invalid-illegal" } ] },
+				"1": { "patterns": [ { "include": "#immediate" }, { "include": "#register" }, { "include": "#macros" }, { "include": "#invalid-illegal" } ] },
 				"2": { "name": "invalid" }
 			}
 		},
@@ -138,7 +142,7 @@
 			"comment": "CAL|JMP|PSH",
 			"match": "(?<=\\s)(\\S+)(.*)",
 			"captures": {
-				"1": { "patterns": [ { "include": "#immediate" }, { "include": "#register" }, { "include": "#memory" }, { "include": "#invalid-illegal" } ] },
+				"1": { "patterns": [ { "include": "#immediate" }, { "include": "#register" }, { "include": "#memory" }, { "include": "#macros" }, { "include": "#invalid-illegal" } ] },
 				"2": { "name": "invalid" }
 			}
 		},
@@ -236,6 +240,7 @@
 				{ "include": "#immediate"	},
 				{ "include": "#register"	},
 				{ "include": "#string"		},
+				{ "include": "#macros"		},
 				{ "include": "#port"		}
 			]
 		},
