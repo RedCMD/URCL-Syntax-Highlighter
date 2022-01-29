@@ -162,8 +162,8 @@ const ReferenceProvider = {
 		// const searchRegex = new RegExp('(?<!\w)' + searchWord + '\\b', 'gm');
 		const locations = [];
 		locations.push(document.uri);
-		locations.push(vscode.Range(new vscode.Position(10, 0), new vscode.Position(10, 7)));
-		locations.push(vscode.Location(doc.uri, new vscode.Range(7, 7, 5, 10)));
+		locations.push(new vscode.Range(new vscode.Position(10, 0), new vscode.Position(10, 7)));
+		locations.push(new vscode.Location(doc.uri, new vscode.Range(7, 7, 5, 10)));
 		vscode.window.showInformationMessage(JSON.stringify(locations));
 		return locations;
 	}
@@ -189,19 +189,41 @@ const DocumentLinkProvider = {
 	}
 }
 
+const DefinitionProvider = {
+	provideDefinition(document, position, token) {
+		const text = document.getText();
+		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord, 'gm');	// why can I not use \s* to match whitespace??
+		
+		var match = [];
+		if ((match = regex.exec(text)) !== null) { // currently there is no check to see if its an actual .label #TODO
+			
+			const lineIndex = document.positionAt(match.index).line; // get line index of match relative to document
+			const characterIndex = document.lineAt(lineIndex).text.indexOf(match[0]); // get character index of match relative to line
+			const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + match[0].length);
+			const location = new vscode.Location(document.uri, range);
+			
+			vscode.window.showInformationMessage(JSON.stringify(document.getWordRangeAtPosition(position)));
+			return location;
+		}
+	}
+}
 
-// main()
+
 const fileSelector = [
+	{ scheme: 'file', language: 'urcl' },
 	{ scheme: 'file', language: '.urcl' },
 	{ scheme: 'file', language: '.simple.urcl' },
 	{ scheme: 'file', pattern: '**/*.urcl' }
 ];
+// main()
 function activate(context) {
-	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider));
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider));
+	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider));	// Numeric hovers
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider));	// overhead .label references
 	// context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider));
-	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
-	
+	// context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
+
 	// vscode.window.showInformationMessage(JSON.stringify());
 }
 
