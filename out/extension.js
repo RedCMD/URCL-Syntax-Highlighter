@@ -92,6 +92,104 @@ const HoverProvider = {
 	}
 }
 
+
+class DocCodeLens extends vscode.CodeLens {
+	/**
+	 * Adds doc to the code lens object.
+	 *
+	 * @param range The range to which this code lens applies.
+	 * @param doc The command associated to this code lens.
+	 * @param symbol The matchedText to which this code lens applies.
+	 */
+	constructor(doc, range, matchedText) {
+		super(range);
+		this.document = doc;
+		this.symbol = matchedText;
+	}
+}
+const CodelensProvider = {
+	provideCodeLenses(document, token) {
+		var codeLenses = [];
+		const regex = /(?<=^[ \t]*)\.\w+/gm;	// why can I not use \s* to match whitespace??
+		const text = document.getText();
+		let matches;
+		while ((matches = regex.exec(text)) !== null) {	// searches entire document and stops at first match
+			const lineIndex = document.positionAt(matches.index).line; // get line index relative to document
+			const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
+			const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length); // create range around match
+			// codeLenses.push(new vscode.CodeLens(range));
+			codeLenses.push(new DocCodeLens(document, range, matches[0])); // need to pass document across
+		}
+		// vscode.window.showInformationMessage(JSON.stringify(codeLenses));
+		return codeLenses;
+	},
+	resolveCodeLens(codeLens, token) {
+		const doc = codeLens.document;
+		const text = doc.getText();
+		const position = codeLens.range.start;
+		const label = new RegExp('(?<!^[ 	]*)\\B' + codeLens.symbol + '\\b', 'gm'); // Why can't I use \s?
+		
+		var locations = [];
+		
+		var matches;
+		var i = 0;
+		while ((matches = label.exec(text)) !== null) {
+			const lineIndex = doc.positionAt(matches.index).line; // get line index relative to document
+			const characterIndex = doc.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
+			locations.push(new vscode.Location(doc.uri, new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length)));
+			// add the doc.uri and matched text range to the list of locations
+			i++;
+		}
+		
+		codeLens.command = {
+			title: `Refs: ${i}`,
+			tooltip: `Peek: ${codeLens.symbol}`,
+			command: 'editor.action.showReferences',
+			arguments: [
+				doc.uri,
+				position,
+				locations
+			]
+		};
+		return codeLens;
+	}
+}
+
+
+const ReferenceProvider = {
+	provideReferences(document, position, context, token) {
+		// const searchWord = document.getText(document.getWordRangeAtPosition(position));
+		// const searchRegex = new RegExp('(?<!\w)' + searchWord + '\\b', 'gm');
+		const locations = [];
+		locations.push(document.uri);
+		locations.push(vscode.Range(new vscode.Position(10, 0), new vscode.Position(10, 7)));
+		locations.push(vscode.Location(doc.uri, new vscode.Range(7, 7, 5, 10)));
+		vscode.window.showInformationMessage(JSON.stringify(locations));
+		return locations;
+	}
+}
+
+const DocumentLinkProvider = {
+	provideTextDocumentContent(uri) {
+		vscode.window.showInformationMessage(JSON.stringify(uri));
+		
+	},
+	provideDocumentLinks(document, token) {
+		// const range = new vscode.Range(1, 1, 1, 4);
+		// const link = new vscode.DocumentLink(range, document.uri);
+		// return link;
+		const doc = document.get(document.uri.toString());
+		vscode.window.showInformationMessage(JSON.stringify(doc.links));
+		if (doc) {
+			return doc.links;
+		}
+	},
+	resolveDocumentLink(link, token) {
+		vscode.window.showInformationMessage(JSON.stringify(link));
+	}
+}
+
+
 // main()
 const fileSelector = [
 	{ scheme: 'file', language: '.urcl' },
@@ -100,6 +198,9 @@ const fileSelector = [
 ];
 function activate(context) {
 	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider));
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider));
+	// context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider));
+	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
 	
 	// vscode.window.showInformationMessage(JSON.stringify());
 }
