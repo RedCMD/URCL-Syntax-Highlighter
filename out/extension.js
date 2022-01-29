@@ -127,7 +127,7 @@ const CodelensProvider = {
 		const doc = codeLens.document;
 		const text = doc.getText();
 		const position = codeLens.range.start;
-		const label = new RegExp('(?<!^[ 	]*)\\B' + codeLens.symbol + '\\b', 'gm'); // Why can't I use \s?
+		const label = new RegExp('(?<!^[ 	]*)' + codeLens.symbol + '\\b', 'gm'); // Why can't I use \s?
 		
 		var locations = [];
 		
@@ -169,6 +169,7 @@ const ReferenceProvider = {
 	}
 }
 
+
 const DocumentLinkProvider = {
 	provideTextDocumentContent(uri) {
 		vscode.window.showInformationMessage(JSON.stringify(uri));
@@ -189,32 +190,36 @@ const DocumentLinkProvider = {
 	}
 }
 
+
 const DefinitionProvider = {
 	provideDefinition(document, position, token) {
-		const text = document.getText();
 		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord, 'gm');	// why can I not use \s* to match whitespace??
+		const regexlabel = new RegExp(/\.\w+/);
 		
-		var match = [];
-		if ((match = regex.exec(text)) !== null) { // currently there is no check to see if its an actual .label #TODO
+		if (regexlabel.test(hoveredWord)) {
+			const text = document.getText();
+			const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord, 'gm');	// why can I not use \s* to match whitespace??
+		
+			var match = [];
+			if ((match = regex.exec(text)) !== null) {
 			
-			const lineIndex = document.positionAt(match.index).line; // get line index of match relative to document
-			const characterIndex = document.lineAt(lineIndex).text.indexOf(match[0]); // get character index of match relative to line
-			const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + match[0].length);
-			const location = new vscode.Location(document.uri, range);
+				const lineIndex = document.positionAt(match.index).line; // get line index of match relative to document
+				const characterIndex = document.lineAt(lineIndex).text.indexOf(match[0]); // get character index of match relative to line
+				const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + match[0].length);
+				const location = new vscode.Location(document.uri, range);
 			
-			vscode.window.showInformationMessage(JSON.stringify(document.getWordRangeAtPosition(position)));
-			return location;
+				return location;
+			}
 		}
 	}
 }
 
 
 const fileSelector = [
-	{ scheme: 'file', language: 'urcl' },
-	{ scheme: 'file', language: '.urcl' },
-	{ scheme: 'file', language: '.simple.urcl' },
-	{ scheme: 'file', pattern: '**/*.urcl' }
+	{ scheme: 'file', language:	'urcl'			},
+	{ scheme: 'file', language:	'.urcl'			},
+	{ scheme: 'file', language:	'.simple.urcl'	},
+	{ scheme: 'file', pattern:	'**/*.urcl'		}
 ];
 // main()
 function activate(context) {
