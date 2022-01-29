@@ -2,17 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 
+
 const HoverProvider = {
 	provideHover(document, position, token) {
-		var hoveredWord = document.getText(document.getWordRangeAtPosition(position));
+		var hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
 		var markdownString = new vscode.MarkdownString();
-		var numericBase = null;
+		var numericBase;
 		
 		var regexHex = /^(~?[+-])?0x[\dA-F]+$/i;
 		var regexDec = /^(~?[+-])?\d+$/;
 		var regexOct = /^(~?[+-])?0o[0-7]+$/i;
 		var regexBin = /^(~?[+-])?0b[01]+$/i;
-		var regexChar = /^'(.|\\.)'+$/;
+		var regexChar = /^'(\\u[\dA-F]{4}|\\?.)'+$/i;
 		
 		// test if the selected word is a number and assign a numeric base
 		if ((regexChar.test(hoveredWord.toString()))) numericBase = 128; //128 could be any number
@@ -22,12 +23,13 @@ const HoverProvider = {
 		else if ((regexBin.test(hoveredWord.toString()))) numericBase = 2;
 		
 		if (numericBase) {
-			var numeric = hoveredWord.replace(/^~[+-]?|^0[box]/, ''); //remove prefixes
-			
+			var numeric;
+			hoveredWord = hoveredWord.replace(/^~[+-]?|^0[box]/, ''); //remove prefixes
+
 			if (numericBase == 128)
 			{
-				if (numeric.charCodeAt(1) == 92)
-					switch (numeric.charAt(2)) {
+				if (hoveredWord.charCodeAt(1) == 92)
+					switch (hoveredWord.charAt(2)) {
 						case 'a': 	numeric = 7;	break;
 						case 'b': 	numeric = 8;	break;
 						case 't': 	numeric = 9;	break;
@@ -37,22 +39,25 @@ const HoverProvider = {
 						case 'r': 	numeric = 13;	break;
 						case 'e': 	numeric = 27;	break;
 						case '\\': 	numeric = 92;	break;
+						case 'u':
+							numeric = parseInt(hoveredWord.replace(/^'\\u|'$/, ''), 16);
+							numericBase = 0xFFFF;
+							break;
 						default:
-							numeric = numeric.charCodeAt(2);
+							numeric = hoveredWord.charCodeAt(3);
 							break;
 					}
 				else
-					numeric = numeric.charCodeAt(1);
+					numeric = hoveredWord.charCodeAt(1);
 			}
 			else
-				numeric = parseInt(numeric, numericBase);
-			
+				numeric = parseInt(hoveredWord, numericBase);
 			
 			var string = '';
-			//don't redisappear the number in the exact same base
-			if (numericBase != 128)
+			//only display chars that are within unicode range 0-0xFFFF
+			if (numericBase != 128 && numeric >= 0 && numeric <= 0xFFFF)
 			{
-				string += '\'';
+				string += '\'';	//instead of typing it for every case
 				switch (numeric) {
 					case 7: 	string += '\\a';	break;
 					case 8: 	string += '\\b';	break;
@@ -64,16 +69,18 @@ const HoverProvider = {
 					case 27: 	string += '\\e';	break;
 					case 92: 	string += '\\\0';	break;
 					case 127: 	string += '\u2421';	break;
-					case 255: 	string += 'NBSP';	break;
+					case 160: 	string += 'NBSP';	break;
+					case 173: 	string += 'SHY';	break;
 					default:
 						string += String.fromCharCode(numeric + (numeric < 32 ? 0x2400 : 0))
 				}
-				string += '\'\n';
+				string += '\'\n';	//instead of typing it for every case
 			}
-			if (numericBase != 16)
-				string += `${numeric < 0 ? '-' : ''}0x${Math.abs(numeric).toString(16).toUpperCase()}\n`;
+			//don't display the number in the same base as the input
 			if (numericBase != 10)
 				string += `${numeric}\n`;
+			if (numericBase != 16)
+				string += `${numeric < 0 ? '-' : ''}0x${Math.abs(numeric).toString(16).toUpperCase()}\n`;	//I don't like negatives
 			if (numericBase != 8)
 				string += `${numeric < 0 ? '-' : ''}0o${Math.abs(numeric).toString(8)}\n`;
 			if (numericBase != 2)
@@ -85,13 +92,19 @@ const HoverProvider = {
 	}
 }
 
-// main
+// main()
+const fileSelector = [
+	{ scheme: 'file', language: '.urcl' },
+	{ scheme: 'file', language: '.simple.urcl' },
+	{ scheme: 'file', pattern: '**/*.urcl' }
+];
 function activate(context) {
-	context.subscriptions.push(vscode.languages.registerHoverProvider({ language: '.urcl' }, HoverProvider));
-	context.subscriptions.push(vscode.languages.registerHoverProvider({ language: '.simple.urcl' }, HoverProvider));
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider(DefinitionProvider));
+	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider));
 	
+	// vscode.window.showInformationMessage(JSON.stringify());
 }
+
+
 exports.activate = activate;
 function deactivate() { }
 exports.deactivate = deactivate;

@@ -27,7 +27,8 @@
 	],
 	"activationEvents": [
 		"onLanguage:.urcl",
-		"onLanguage:.simple.urcl"
+		"onLanguage:.simple.urcl",
+		"workspaceContains:**/*.urcl"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
