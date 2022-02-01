@@ -99,20 +99,21 @@
 			"name": "support.class"
 		},
 		"string": {
-			"match": "\".*\"",
+			"match": "\".*?\"",
 			"name": "string"
 		},
 		"char": {
-			"match": "'(\\\\?(?>[abtnvfre\\\\]|u\\h{,4}|(.)))(.*?)'",
+			"match": "'(\\\\(?>[abtnvfre\\\\]|u\\h{,4}|(.))|(.))(.*?)'",
 			"captures": {
 				"0": { "name": "string" },
 				"1": { "name": "constant.character.escape" },
 				"2": { "name": "string" },
-				"3": { "name": "invalid markup.underline" }
+				"3": { "name": "string" },
+				"4": { "name": "invalid markup.underline" }
 			}
 		},
 		"label": {
-			"match": "(?<!\\w)\\.\\w*\\b",
+			"match": "(?<!\\w)\\.\\w+\\b",
 			"name": "support.function"
 		},
 		"macro": {

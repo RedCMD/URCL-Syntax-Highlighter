@@ -3,6 +3,79 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 
 
+
+
+function replace(string, start, end) {
+	const chars = new Array(end - start + 1).join(' ')
+	return string.substring(0, start) + chars + string.substring(end)
+}
+
+
+function sanitizeText(text) {
+	let j
+	for (let i = 0; i < text.length; i++) {
+		const element = text[i];
+		switch (element) {
+			case '/':
+				switch (text[i + 1]) {
+					case '/':
+						for (j = i + 1; j < text.length; j++) {
+							if (text[j] == '\r' || text[j] == '\n')
+								break
+						}
+						text = replace(text, i, j)
+						i = j
+						break
+					case '*':
+						for (j = i + 1; j < text.length; j++) {
+							if (text[j] == '\r' || text[j] == '\n') {
+								text = replace(text, i, j)
+								i = j + 1
+							}
+							if (text[j] == '*') {
+								if (text[j + 1] == '/') {
+									j += 2
+									break
+								}
+							}
+						}
+						text = replace(text, i, j)
+						i = j
+						break
+					default:
+						i++
+				}
+				break
+			case '"':
+				for (j = i + 1; j < text.length; j++) {
+					if (text[j] == '"') {
+						text = replace(text, i + 1, j)
+						i = j
+						break
+					}
+					if (text[j] == '\r' || text[j] == '\n')
+						break
+				}
+				break
+			case "'":
+				for (j = i + 1; j < text.length; j++) {
+					if (text[j] == "'") {
+						text = replace(text, i + 1, j)
+						i = j
+						break
+					}
+					if (text[j] == '\r' || text[j] == '\n')
+						break
+				}
+				break
+		}
+	}
+	// vscode.window.showInformationMessage(JSON.stringify(text))
+	// vscode.window.showInformationMessage(text)
+	return text
+}
+
+
 const HoverProvider = {
 	provideHover(document, position, token) {
 		var hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
@@ -109,36 +182,46 @@ class DocCodeLens extends vscode.CodeLens {
 }
 const CodelensProvider = {
 	provideCodeLenses(document, token) {
-		var codeLenses = [];
-		const regex = /(?<=^[ \t]*)\.\w+/gm;	// why can I not use \s* to match whitespace??
-		const text = document.getText();
+		var codeLenses = []
+		const regex = /(?<=^[ \t]*)\.\w+\b/gm	// why can I not use \s* to match whitespace??
+		// const text = document.getText()
+		const text = sanitizeText(document.getText())
 		let matches;
-		while ((matches = regex.exec(text)) !== null) {	// searches entire document and stops at first match
-			const lineIndex = document.positionAt(matches.index).line; // get line index relative to document
-			const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
-			const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length); // create range around match
+		// vscode.window.showInformationMessage(JSON.stringify(text));
+		while ((matches = regex.exec(text)) !== null) {	// searches entire document and stops at each match
+			const positionStart = document.positionAt(matches.index)
+			const positionEnd = document.positionAt(matches.index + matches[0].length)
+			const range = new vscode.Range(positionStart, positionEnd)
+			// const lineIndex = document.positionAt(matches.index).line; // get line index relative to document
+			// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
+			// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length); // create range around match
 			// codeLenses.push(new vscode.CodeLens(range));
-			codeLenses.push(new DocCodeLens(document, range, matches[0])); // need to pass document across
+			codeLenses.push(new DocCodeLens(document, range, matches[0])) // need to pass document across
 		}
 		// vscode.window.showInformationMessage(JSON.stringify(codeLenses));
 		return codeLenses;
 	},
 	resolveCodeLens(codeLens, token) {
-		const doc = codeLens.document;
-		const text = doc.getText();
-		const position = codeLens.range.start;
-		const label = new RegExp('(?<!^[ 	]*)' + codeLens.symbol + '\\b', 'gm'); // Why can't I use \s?
+		const doc = codeLens.document
+		// const text = doc.getText()
+		const text = sanitizeText(doc.getText())
+		const position = codeLens.range.start
+		const label = new RegExp('(?<!^[ 	]*)\\' + codeLens.symbol + '\\b', 'gm') // Why can't I use \s?
 		
 		var locations = [];
 		
+		var i = 0
 		var matches;
-		var i = 0;
 		while ((matches = label.exec(text)) !== null) {
-			const lineIndex = doc.positionAt(matches.index).line; // get line index relative to document
-			const characterIndex = doc.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
-			locations.push(new vscode.Location(doc.uri, new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length)));
-			// add the doc.uri and matched text range to the list of locations
-			i++;
+			const positionStart = doc.positionAt(matches.index)
+			const positionEnd = doc.positionAt(matches.index + matches[0].length)
+			const range = new vscode.Range(positionStart, positionEnd)
+			const location = new vscode.Location(doc.uri, range)
+			locations.push(location)
+			// const lineIndex = doc.positionAt(matches.index).line; // get line index relative to document
+			// const characterIndex = doc.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
+			// locations.push(new vscode.Location(doc.uri, new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length))); // add the doc.uri and matched text range to the list of locations
+			i++
 		}
 		
 		codeLens.command = {
@@ -158,14 +241,29 @@ const CodelensProvider = {
 
 const ReferenceProvider = {
 	provideReferences(document, position, context, token) {
-		// const searchWord = document.getText(document.getWordRangeAtPosition(position));
-		// const searchRegex = new RegExp('(?<!\w)' + searchWord + '\\b', 'gm');
-		const locations = [];
-		locations.push(document.uri);
-		locations.push(new vscode.Range(new vscode.Position(10, 0), new vscode.Position(10, 7)));
-		locations.push(new vscode.Location(doc.uri, new vscode.Range(7, 7, 5, 10)));
-		vscode.window.showInformationMessage(JSON.stringify(locations));
-		return locations;
+		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const regexlabel = new RegExp(/\.\w+/);
+		if (regexlabel.test(hoveredWord)) {
+			// const text = document.getText();
+			const text = sanitizeText(document.getText())
+			const regex = new RegExp('\\B' + hoveredWord + '\\b', 'gm');	// why can I not use \s* to match whitespace??
+		
+			var locations = [];
+			var matches = [];
+			while ((matches = regex.exec(text)) !== null) {
+			
+				// const lineIndex = document.positionAt(matches.index).line; // get line index of match relative to document
+				// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index of match relative to line
+				// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length);
+				// const range = new vscode.Range(document.positionAt(matches.index), document.positionAt(matches.index + matches[0].length));
+				const positionStart = document.positionAt(matches.index);
+				const positionEnd = document.positionAt(matches.index + matches[0].length);
+				const range = new vscode.Range(positionStart, positionEnd);
+				locations.push(new vscode.Location(document.uri, range));
+				vscode.window.showInformationMessage(JSON.stringify(locations));
+			}
+			return locations;
+		}
 	}
 }
 
@@ -193,16 +291,29 @@ const DocumentLinkProvider = {
 
 const DefinitionProvider = {
 	provideDefinition(document, position, token) {
+		const text2 = sanitizeText(document.getText())
 		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const regexlabel = new RegExp(/\.\w+/);
+		// const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const regexlabel = new RegExp(/\B\.\w+\b/);
 		
 		if (regexlabel.test(hoveredWord)) {
-			const text = document.getText();
-			const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord, 'gm');	// why can I not use \s* to match whitespace??
-		
-			var match = [];
-			if ((match = regex.exec(text)) !== null) {
+			// const text = document.getText();
+			const text = sanitizeText(document.getText())
 			
+			const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord + '\\b', 'gm');	// why can I not use \s* to match whitespace?? hoveredWord
+			var locations = [];
+			var matches = [];
+			while ((matches = regex.exec(text)) !== null) {
+				// const lineIndex = document.positionAt(matches.index).line; // get line index of match relative to document
+				// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index of match relative to line
+				// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length);
+				const positionStart = document.positionAt(matches.index);
+				const positionEnd = document.positionAt(matches.index + matches[0].length);
+				const range = new vscode.Range(positionStart, positionEnd);
+				locations.push(new vscode.Location(document.uri, range));
+			}
+			// vscode.window.showInformationMessage(JSON.stringify(locations));
+			return locations;
 				const lineIndex = document.positionAt(match.index).line; // get line index of match relative to document
 				const characterIndex = document.lineAt(lineIndex).text.indexOf(match[0]); // get character index of match relative to line
 				const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + match[0].length);
@@ -219,21 +330,25 @@ const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
 	{ scheme: 'file', language:	'.urcl'			},
 	{ scheme: 'file', language:	'.simple.urcl'	},
-	{ scheme: 'file', pattern:	'**/*.urcl'		}
+	{ scheme: 'file', pattern:	'**/*.urcl'		},
+	{ scheme: 'file', pattern:	'**/*.urclpp'	},
+	{ scheme: 'file', pattern:	'**/urcl'		},
+	{ scheme: 'file', pattern:	'**/urclpp'		}
 ];
 // main()
 function activate(context) {
-	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider));	// Numeric hovers
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider));	// overhead .label references
-	// context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider));
-	// context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
+	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider)); // Numeric hovers
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
+	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
+	// context.subscriptions.push(vscode.workspace.onDidChangeTextDocument()); // update while typing
+	// context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
+	// context.subscriptions.push(vscode.window.registerFileDecorationProvider());
 
-	// vscode.window.showInformationMessage(JSON.stringify());
+	// vscode.window.showInformationMessage(JSON.stringify(context));
 }
 
 
 exports.activate = activate;
 function deactivate() { }
 exports.deactivate = deactivate;
-//# sourceMappingURL=extension.js.map
