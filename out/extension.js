@@ -3,78 +3,55 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 
 
-
-
-function replace(string, start, end) {
-	const chars = new Array(end - start + 1).join(' ')
-	return string.substring(0, start) + chars + string.substring(end)
+function insertBlanks(string, index, length) {
+	const chars = new Array(length + 1).join(' ')
+	return string.substring(0, index) + chars + string.substring(index + length)
 }
 
 
-function sanitizeText(text) {
-	let j
-	for (let i = 0; i < text.length; i++) {
-		const element = text[i];
-		switch (element) {
-			case '/':
-				switch (text[i + 1]) {
-					case '/':
-						for (j = i + 1; j < text.length; j++) {
-							if (text[j] == '\r' || text[j] == '\n')
-								break
-						}
-						text = replace(text, i, j)
-						i = j
-						break
-					case '*':
-						for (j = i + 1; j < text.length; j++) {
-							if (text[j] == '\r' || text[j] == '\n') {
-								text = replace(text, i, j)
-								i = j + 1
-							}
-							if (text[j] == '*') {
-								if (text[j + 1] == '/') {
-									j += 2
-									break
-								}
-							}
-						}
-						text = replace(text, i, j)
-						i = j
-						break
-					default:
-						i++
-				}
-				break
-			case '"':
-				for (j = i + 1; j < text.length; j++) {
-					if (text[j] == '"') {
-						text = replace(text, i + 1, j)
-						i = j
-						break
-					}
-					if (text[j] == '\r' || text[j] == '\n')
-						break
-				}
-				break
-			case "'":
-				for (j = i + 1; j < text.length; j++) {
-					if (text[j] == "'") {
-						text = replace(text, i + 1, j)
-						i = j
-						break
-					}
-					if (text[j] == '\r' || text[j] == '\n')
-						break
-				}
-				break
-		}
-	}
-	// vscode.window.showInformationMessage(JSON.stringify(text))
+// replaces // line-comments and /* block-comments */ with spaces
+// while taking "strings" and 'chars' into account
+function sanitizeText(text, option) {
+	let match = []
+	let matchBlockComment = []
+	const regex = /(\/\/.*?$)|(\/\*.*?\*\/)|(".*?"|'.*?')/gms	// s modifier allows . to match newlines \r\n
+	const regexBlockComment = /.+/g	// . cannot match newlines
+	
+	while (match = regex.exec(text))
+		if (match[1])	// remove //line comments
+			text = insertBlanks(text, match.index, match[0].length)
+		else if (match[2])	// remove /*block comments*/
+			while (matchBlockComment = regexBlockComment.exec(match[2]))	// does not remove \n newlines
+				text = insertBlanks(text, match.index + matchBlockComment.index, matchBlockComment[0].length)
+		else if (option)	// remove "strings" and 'chars'
+			text = insertBlanks(text, match.index + 1, match[0].length - 2)
+
 	// vscode.window.showInformationMessage(text)
 	return text
 }
 
+
+function getLabels(document, option) {
+	let match = []
+	let labels = []
+	let regex
+	const text = sanitizeText(document.getText(), true)
+
+	switch (option) {
+		default:	regex = /\B\.\w+/g;						break	// all .labels
+		case 1:		regex = /(?<!^[\t\f\v ]*)\B\.\w+/gm;	break	// only reference .labels
+		case 2:		regex = /(?<=^[\t\f\v ]*)\.\w+/gm;		break	// only definition .labels
+	}
+
+	while (match = regex.exec(text)) {
+		const positionStart = document.positionAt(match.index)
+		const positionEnd = document.positionAt(match.index + match[0].length)
+		const range = new vscode.Range(positionStart, positionEnd)
+		labels.push({ document: document, range: range, symbol: match[0] })
+	}
+	// vscode.window.showInformationMessage(JSON.stringify(labels))
+	return labels
+}
 
 const HoverProvider = {
 	provideHover(document, position, token) {
@@ -165,76 +142,40 @@ const HoverProvider = {
 	}
 }
 
-
-class DocCodeLens extends vscode.CodeLens {
-	/**
-	 * Adds doc to the code lens object.
-	 *
-	 * @param range The range to which this code lens applies.
-	 * @param doc The command associated to this code lens.
-	 * @param symbol The matchedText to which this code lens applies.
-	 */
-	constructor(doc, range, matchedText) {
-		super(range);
-		this.document = doc;
-		this.symbol = matchedText;
-	}
-}
 const CodelensProvider = {
 	provideCodeLenses(document, token) {
-		var codeLenses = []
-		const regex = /(?<=^[ \t]*)\.\w+\b/gm	// why can I not use \s* to match whitespace??
-		// const text = document.getText()
-		const text = sanitizeText(document.getText())
-		let matches;
-		// vscode.window.showInformationMessage(JSON.stringify(text));
-		while ((matches = regex.exec(text)) !== null) {	// searches entire document and stops at each match
-			const positionStart = document.positionAt(matches.index)
-			const positionEnd = document.positionAt(matches.index + matches[0].length)
-			const range = new vscode.Range(positionStart, positionEnd)
-			// const lineIndex = document.positionAt(matches.index).line; // get line index relative to document
-			// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
-			// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length); // create range around match
-			// codeLenses.push(new vscode.CodeLens(range));
-			codeLenses.push(new DocCodeLens(document, range, matches[0])) // need to pass document across
-		}
-		// vscode.window.showInformationMessage(JSON.stringify(codeLenses));
-		return codeLenses;
+
+		// vscode.window.showInformationMessage(JSON.stringify(getLabels(document, 2)))
+		return getLabels(document, 2)
 	},
 	resolveCodeLens(codeLens, token) {
-		const doc = codeLens.document
-		// const text = doc.getText()
-		const text = sanitizeText(doc.getText())
+		const document = codeLens.document
 		const position = codeLens.range.start
-		const label = new RegExp('(?<!^[ 	]*)\\' + codeLens.symbol + '\\b', 'gm') // Why can't I use \s?
-		
-		var locations = [];
-		
-		var i = 0
-		var matches;
-		while ((matches = label.exec(text)) !== null) {
-			const positionStart = doc.positionAt(matches.index)
-			const positionEnd = doc.positionAt(matches.index + matches[0].length)
-			const range = new vscode.Range(positionStart, positionEnd)
-			const location = new vscode.Location(doc.uri, range)
-			locations.push(location)
-			// const lineIndex = doc.positionAt(matches.index).line; // get line index relative to document
-			// const characterIndex = doc.lineAt(lineIndex).text.indexOf(matches[0]); // get character index relative to line
-			// locations.push(new vscode.Location(doc.uri, new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length))); // add the doc.uri and matched text range to the list of locations
-			i++
+		const symbol = codeLens.symbol
+		let labels = getLabels(document, 1)
+		let label
+		let locations = []
+		let i = 0
+
+		while (label = labels.pop()) {
+			if (label.symbol == symbol) {
+				const location = new vscode.Location(document.uri, label.range)
+				locations.push(location)
+				i++
+			}
 		}
-		
+
 		codeLens.command = {
 			title: `Refs: ${i}`,
-			tooltip: `Peek: ${codeLens.symbol}`,
+			tooltip: `${codeLens.symbol}`,
 			command: 'editor.action.showReferences',
 			arguments: [
-				doc.uri,
+				document.uri,
 				position,
 				locations
 			]
-		};
-		return codeLens;
+		}
+		return codeLens
 	}
 }
 
@@ -242,85 +183,41 @@ const CodelensProvider = {
 const ReferenceProvider = {
 	provideReferences(document, position, context, token) {
 		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const regexlabel = new RegExp(/\.\w+/);
-		if (regexlabel.test(hoveredWord)) {
-			// const text = document.getText();
-			const text = sanitizeText(document.getText())
-			const regex = new RegExp('\\B' + hoveredWord + '\\b', 'gm');	// why can I not use \s* to match whitespace??
-		
-			var locations = [];
-			var matches = [];
-			while ((matches = regex.exec(text)) !== null) {
+		const regexlabel = new RegExp(/^\.\w+$/m); // .label
+
+		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
+			let labels = getLabels(document, 0)	// get a list of all labels in doc
+			let label
+			let locations = []
 			
-				// const lineIndex = document.positionAt(matches.index).line; // get line index of match relative to document
-				// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index of match relative to line
-				// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length);
-				// const range = new vscode.Range(document.positionAt(matches.index), document.positionAt(matches.index + matches[0].length));
-				const positionStart = document.positionAt(matches.index);
-				const positionEnd = document.positionAt(matches.index + matches[0].length);
-				const range = new vscode.Range(positionStart, positionEnd);
-				locations.push(new vscode.Location(document.uri, range));
-				vscode.window.showInformationMessage(JSON.stringify(locations));
-			}
+			while (label = labels.pop())
+				if (hoveredWord == label.symbol)	// test if .label in doc is same as selected .label
+					locations.push(new vscode.Location(document.uri, label.range))
+			
 			return locations;
 		}
-	}
-}
-
-
-const DocumentLinkProvider = {
-	provideTextDocumentContent(uri) {
-		vscode.window.showInformationMessage(JSON.stringify(uri));
-		
-	},
-	provideDocumentLinks(document, token) {
-		// const range = new vscode.Range(1, 1, 1, 4);
-		// const link = new vscode.DocumentLink(range, document.uri);
-		// return link;
-		const doc = document.get(document.uri.toString());
-		vscode.window.showInformationMessage(JSON.stringify(doc.links));
-		if (doc) {
-			return doc.links;
-		}
-	},
-	resolveDocumentLink(link, token) {
-		vscode.window.showInformationMessage(JSON.stringify(link));
 	}
 }
 
 
 const DefinitionProvider = {
 	provideDefinition(document, position, token) {
-		const text2 = sanitizeText(document.getText())
 		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		// const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const regexlabel = new RegExp(/\B\.\w+\b/);
+		const regexlabel = new RegExp(/^\.\w+$/m); // .label
 		
-		if (regexlabel.test(hoveredWord)) {
-			// const text = document.getText();
-			const text = sanitizeText(document.getText())
+		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
+			let labels = getLabels(document, 2)	// get a list of all labels in doc
+			let label
+			let locations = []
 			
-			const regex = new RegExp('(?<=^[ 	]*)' + hoveredWord + '\\b', 'gm');	// why can I not use \s* to match whitespace?? hoveredWord
-			var locations = [];
-			var matches = [];
-			while ((matches = regex.exec(text)) !== null) {
-				// const lineIndex = document.positionAt(matches.index).line; // get line index of match relative to document
-				// const characterIndex = document.lineAt(lineIndex).text.indexOf(matches[0]); // get character index of match relative to line
-				// const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + matches[0].length);
-				const positionStart = document.positionAt(matches.index);
-				const positionEnd = document.positionAt(matches.index + matches[0].length);
-				const range = new vscode.Range(positionStart, positionEnd);
-				locations.push(new vscode.Location(document.uri, range));
-			}
-			// vscode.window.showInformationMessage(JSON.stringify(locations));
+			while (label = labels.pop())
+				if (hoveredWord == label.symbol)	// test if .label in doc is same as selected .label
+					locations.push(new vscode.Location(document.uri, label.range))
+			
+			if (!locations)
+				locations.push(new vscode.Location(document.uri, document.getWordRangeAtPosition(position)))
+
 			return locations;
-				const lineIndex = document.positionAt(match.index).line; // get line index of match relative to document
-				const characterIndex = document.lineAt(lineIndex).text.indexOf(match[0]); // get character index of match relative to line
-				const range = new vscode.Range(lineIndex, characterIndex, lineIndex, characterIndex + match[0].length);
-				const location = new vscode.Location(document.uri, range);
-			
-				return location;
-			}
 		}
 	}
 }
