@@ -20,7 +20,8 @@
 		{ "include": "#macro"			},
 		{ "include": "#port"			},
 		{ "include": "#bits"			},
-		{ "include": "#char"			}
+		{ "include": "#char"			},
+		{ "include": "#invalid"			}
 	],
 	"repository": {
 		"comment-block": {
@@ -34,7 +35,7 @@
 			"name": "comment"
 		},
 		"preprocessor": {
-			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|REG|STACK)|NAME)\\b",
+			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|REG|STACK))\\b",
 			"name": "keyword.control"
 		},
 		"instruction": {
@@ -42,7 +43,7 @@
 			"name": "keyword"
 		},
 		"instruction??": {
-			"match": "(?<=^\\s*)[a-zA-Z][a-zA-Z_]*(?=\\s+)",
+			"match": "(?<=^\\s*)[a-zA-Z]\\w*(?=\\s+)",
 			"name": "keyword markup.italic"
 		},
 		"comparison": {
@@ -61,8 +62,7 @@
 			}
 		},
 		"variable": {
-			"match": "(?<=[\\s<>,])[A-Za-z]\\w*(?=[\\s<>;,])",
-			"name": "variable strong"
+			"match": "(?<=[\\s<>,])[A-Za-z]\\w*(?=[\\s<>;,])"
 		},
 		"square-bracket": {
 			"match": "\\[|]",
@@ -72,10 +72,10 @@
 			"match": "(?<!\\w)(?:~?[-+])?(?:0(?:x(.*?)|b(.*?)|o(.*?))|(\\d.*?))\\b",
 			"captures": {
 				"0": { "name": "constant.numeric" },
-				"1": { "patterns": [ { "include": "#hexadecimal"	}, { "include": "#invalid-illegal" } ] },
-				"2": { "patterns": [ { "include": "#binary"			}, { "include": "#invalid-illegal" } ] },
-				"3": { "patterns": [ { "include": "#octal"			}, { "include": "#invalid-illegal" } ] },
-				"4": { "patterns": [ { "include": "#decimal"		}, { "include": "#invalid-illegal" } ] }
+				"1": { "patterns": [ { "include": "#hexadecimal" }, { "include": "#underscore" }, { "include": "#invalid-illegal" } ] },
+				"2": { "patterns": [ { "include": "#binary"		 }, { "include": "#underscore" }, { "include": "#invalid-illegal" } ] },
+				"3": { "patterns": [ { "include": "#octal"		 }, { "include": "#underscore" }, { "include": "#invalid-illegal" } ] },
+				"4": { "patterns": [ { "include": "#decimal"	 }, { "include": "#underscore" }, { "include": "#invalid-illegal" } ] }
 			}
 		},
 		"hexadecimal": {
@@ -94,6 +94,10 @@
 			"match": "\\d+",
 			"name": "constant.numeric.decimal"
 		},
+		"underscore": {
+			"match": "_+",
+			"name": "punctuation.definition.tag"
+		},
 		"memory": {
 			"match": "(?<!\\w)[#Mm]\\d+\\b",
 			"name": "support.class"
@@ -103,13 +107,11 @@
 			"name": "string"
 		},
 		"char": {
-			"match": "'(\\\\(?>[abtnvfre\\\\]|u\\h{,4}|(.))|(.))(.*?)'",
+			"match": "'(?>(\\\\(?>u\\h{,4}|.))|.)?(.*?)'",
 			"captures": {
 				"0": { "name": "string" },
 				"1": { "name": "constant.character.escape" },
-				"2": { "name": "string" },
-				"3": { "name": "string" },
-				"4": { "name": "invalid markup.underline" }
+				"2": { "name": "invalid markup.underline" }
 			}
 		},
 		"label": {
@@ -128,8 +130,12 @@
 			}
 		},
 		"bits": {
-			"match": "&(?i:BITS|S?M(AX|SB)|[UL]HALF)\\b",
+			"match": "@(?i:BITS|S?M(AX|SB)|[UL]HALF)\\b",
 			"name": "keyword.control"
+		},
+		"invalid": {
+			"match": "[^\\w\\s][^]\\[\\w\\s\"/@$#;<>+=~.'-]*",
+			"name": "invalid"
 		},
 		"invalid-illegal": {
 			"match": "\\S",

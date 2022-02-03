@@ -24,11 +24,6 @@
 		"prefix": "MINSTACK",
 		"body": "MINSTACK ${1:8}$0"
 	},
-	"OPS": {
-		"description": "Number of Opperands: The max amount of opperands instructions will have.",
-		"prefix": "OPS",
-		"body": "OPS ${1:3}$0"
-	},
 	"RUN": {
 		"description": "Instruction Storage Architecture: Instructions can be stored in the same RAM space as the program runs in OR in a seperate ROM space which the program cannot access.",
 		"prefix": "RUN",
