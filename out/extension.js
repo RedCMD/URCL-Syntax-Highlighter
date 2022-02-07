@@ -542,8 +542,8 @@ const HoverWords = [
 ]
 
 
-function insertBlanks(string, index, length) {
-	const chars = new Array(length + 1).join(' ')
+function insertChars(string, index, length, char) {
+	const chars = new Array(length + 1).join(char)
 	return string.substring(0, index) + chars + string.substring(index + length)
 }
 
@@ -553,41 +553,93 @@ function insertBlanks(string, index, length) {
 function sanitizeText(text, option) {
 	let match = []
 	let matchBlockComment = []
+	// const regex = /(\/\/.*?$)|(\/\*.*?\*\/)|("[^"]*"|'[^']*')/gms	// s modifier allows . to match newlines \r\n
 	const regex = /(\/\/.*?$)|(\/\*.*?\*\/)|(".*?"|'.*?')/gms	// s modifier allows . to match newlines \r\n
 	const regexBlockComment = /.+/g	// . cannot match newlines
 	
 	while (match = regex.exec(text))
 		if (match[1])	// remove //line comments
-			text = insertBlanks(text, match.index, match[0].length)
+			text = insertChars(text, match.index, match[0].length, ' ')
 		else if (match[2])	// remove /*block comments*/
 			while (matchBlockComment = regexBlockComment.exec(match[2]))	// does not remove \n newlines
-				text = insertBlanks(text, match.index + matchBlockComment.index, matchBlockComment[0].length)
+				text = insertChars(text, match.index + matchBlockComment.index, matchBlockComment[0].length, ' ')
 		else if (option)	// remove "strings" and 'chars'
-			text = insertBlanks(text, match.index + 1, match[0].length - 2)
+			text = insertChars(text, match.index + 1, match[0].length - 2, '_')
 
 	// vscode.window.showInformationMessage(text)
 	return text
 }
 
 
-function getLabels(document, option) {
+function tokenizeDoc(document) {
+	const text = document.getText()
+	let tokens = []
 	let match = []
-	let labels = []
-	let regex
-	const text = sanitizeText(document.getText(), true)
+	let regex = new RegExp([
+		/(?<comment_line>\/\/.*$)/,
+		/(?<comment_block>\/\*[\S\s]*?\*\/)/,	// match everything including newlines \r\n
+		/(?<string>"[^"\r\n]*")/,
+		/(?<char>'[^'\r\n]*')/,
+		/(?<=^\s*)(?<instruction>ADD|AND|BEV|BGE|BLE|BNC|BNE|BNZ|BOD|BRC|BRE|BRG|BRL|BRN|BRP|BRZ|BSL|BSR|BSS|CAL|CPY|DEC|DIV|HLT|IMM|IN|INC|JMP|LLOD|LOD|LSH|LSTR|MLT|MOD|MOV|NAND|NEG|NOP|NOR|NOT|OR|OUT|POP|PSH|RET|RSH|SETC|SETE|SETG|SETGE|SETL|SETLE|SETNC|SETNE|SRS|STR|SUB|XNOR|XOR)/,
+		/(?<=^\s*)(?<header>BITS|RUN|MINREG|MINHEAP|MINSTACK)/,
+		/(?<=^\s*)(?<label_define>\.\w*)/,
+		/(?<label>\.\w*)/,
+		/(?<=^\s*)(?<define>@DEFINE)/,
+		/(?<macro>@\w*)/,
+		/(?<register>[R$]\d*)/,
+		/(?<numeric>~?[-+]?\d\w*)/,
+		/(?<memory>[#M]\d*)/,
+		/(?<=^\s*)(?<instruction_unknown>\w+)/,
+		/(?<port>%\w*)/,
+		/(?<condiational>[=<>]=?)/,
+		/(?<square_brackets>\[[^\]\r\n]*\])/,
+		/(?<semi_colon>;)/,
+		/(?<comma>,)/,
+		/(?<word>\w+)/,
+		/(?<invalid>(?!\/[\/\*])\S(?:(?!\/[/*])[^\s\w\[\]"'@#%$;,*=<>.+-])*)/,
+		/(?<unknown>\S)/,
+	].map(function (r) { return r.source }).join('|'), 'dgim');
+		// 'd' enables `indices`; which allows extracting which named capture group matched the input
+		// 'g' enables global; which is required for how Im using `.exec()`
+		// 'i' enables case-insensitive `minheap` == `mINhEap` == `MINHEAP`
+		// 'm' enables multiline mode; allowing `^` to match the start of a line and `$` to match the end of a line
+		// ~~'s' enables the dot `.` to match new lines \r\n~~		// used `\r?\n` instead
 
-	switch (option) {
-		default:	regex = /\B\.\w+/g;						break	// all .labels
-		case 1:		regex = /(?<!^[\t\f\v ]*)\B\.\w+/gm;	break	// only reference .labels
-		case 2:		regex = /(?<=^[\t\f\v ]*)\.\w+/gm;		break	// only definition .labels
-	}
-
+	// vscode.window.showInformationMessage(regex.toString())
 	while (match = regex.exec(text)) {
+		const captureGroups = Object.entries(match.indices.groups)
+		// find the name and matched text of the first (and only) matching capture group
+		for (var index = 0; index < captureGroups.length; index++)
+			if (captureGroups[index][1] != null)
+				break
+		// vscode.window.showInformationMessage(captureGroups[index][0])
+		const name = captureGroups[index][0]
 		const positionStart = document.positionAt(match.index)
 		const positionEnd = document.positionAt(match.index + match[0].length)
 		const range = new vscode.Range(positionStart, positionEnd)
-		labels.push({ document: document, range: range, symbol: match[0] })
+		const token = { name: name, symbol: match[0], range: range }
+		// vscode.window.showInformationMessage(JSON.stringify(token))
+		tokens.push(token)
 	}
+	
+	vscode.window.showInformationMessage(JSON.stringify(tokens))
+	return tokens
+}
+
+
+function getLabels(document, option) {
+	let labels = []
+	const tokens = tokenizeDoc(document)
+	let token
+	
+	// option:0 all .labels
+	// option:1 only reference .labels
+	// option:2 only definition .labels
+	while (token = tokens.pop())
+		if ((option ^ 2 && token.name == 'label') || (option ^ 1 && token.name == 'label_define'))
+			labels.push({ document: document, range: token.range, symbol: token.symbol })
+
+
 	// vscode.window.showInformationMessage(JSON.stringify(labels))
 	return labels
 }
@@ -605,7 +657,7 @@ const HoverProvider = {
 			markdownString.appendCodeblock(HoverWordObject.name + (operands ? ': ' + operands + ' Opperand' + (operands > 1 ? 's' : '') : ''), 'plaintext')
 			markdownString.appendCodeblock(HoverWordObject.description, '.simple.urcl')
 			
-			vscode.window.showInformationMessage(JSON.stringify(HoverWordObject))
+			// vscode.window.showInformationMessage(JSON.stringify(HoverWordObject))
 			return { contents: [markdownString], range: range }
 		}
 
@@ -697,9 +749,12 @@ const HoverProvider = {
 
 const CodelensProvider = {
 	provideCodeLenses(document, token) {
+		const labels = getLabels(document, 2)
+		// vscode.window.showInformationMessage(JSON.stringify(labels))
+		return labels
 
-		// vscode.window.showInformationMessage(JSON.stringify(getLabels(document, 2)))
-		return getLabels(document, 2)
+		// tokenizeDoc(document)
+
 	},
 	resolveCodeLens(codeLens, token) {
 		const document = codeLens.document
@@ -717,7 +772,18 @@ const CodelensProvider = {
 				i++
 			}
 		}
-
+		// if (i == 0) {
+		// 	while (label = codeLens.pop()) {
+		// 		if (label.symbol == symbol) {
+		// 			const location = new vscode.Location(document.uri, label.range)
+		// 			locations.push(location)
+		// 			i++
+		// 		}
+		// 	}
+		// 	if (i == 1)
+		// 		locations.pop()
+		// }
+		
 		codeLens.command = {
 			title: `Refs: ${i}`,
 			tooltip: `${codeLens.symbol}`,
@@ -735,18 +801,21 @@ const CodelensProvider = {
 
 const ReferenceProvider = {
 	provideReferences(document, position, context, token) {
-		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const range = document.getWordRangeAtPosition(position);	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const hoveredWord = document.getText(range);
 		const regexlabel = new RegExp(/^\.\w+$/m); // .label
-
 		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
-			let labels = getLabels(document, 0)	// get a list of all labels in doc
-			let label
+			const tokens = tokenizeDoc(document)
 			let locations = []
 			
-			while (label = labels.pop())
-				if (hoveredWord == label.symbol)	// test if .label in doc is same as selected .label
-					locations.push(new vscode.Location(document.uri, label.range))
+			while (token = tokens.pop())
+				if (token.name.startsWith('label'))
+					if (token.symbol == hoveredWord)
+						locations.push(new vscode.Location(document.uri, token.range))
 			
+			if (!locations)
+				locations.push(new vscode.Location(document.uri, range))
+
 			return locations;
 		}
 	}
@@ -755,7 +824,8 @@ const ReferenceProvider = {
 
 const DefinitionProvider = {
 	provideDefinition(document, position, token) {
-		const hoveredWord = document.getText(document.getWordRangeAtPosition(position));	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const range = document.getWordRangeAtPosition(position);	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const hoveredWord = document.getText(range);
 		const regexlabel = new RegExp(/^\.\w+$/m); // .label
 		
 		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
@@ -768,12 +838,59 @@ const DefinitionProvider = {
 					locations.push(new vscode.Location(document.uri, label.range))
 			
 			if (!locations)
-				locations.push(new vscode.Location(document.uri, document.getWordRangeAtPosition(position)))
+				locations.push(new vscode.Location(document.uri, range))
 
 			return locations;
 		}
 	}
 }
+
+
+// const decorationType = vscode.window.createTextEditorDecorationType({
+// 	// backgroundColor: 'green',
+// 	// border: '2px solid white'
+// 	after: {
+// 		margin: "0 0 0 3em",
+// 		textDecoration: "none"
+// 	},
+// 	rangeBehavior: vscode.DecorationRangeBehavior.ClosedOpen,
+	
+// })
+// function decorate(editor) {
+// 	let sourceCode = editor.document.getText()
+// 	let regex = /(mov.*)/i
+
+// 	let decorationsArray = []
+
+// 	const sourceCodeArr = sourceCode.split('\n')
+
+// 	for (let line = 0; line < sourceCodeArr.length; line++) {
+// 		let match = sourceCodeArr[line].match(regex)
+
+// 		if (match !== null && match.index !== undefined) {
+// 			// vscode.window.showInformationMessage(JSON.stringify(match[0].length));
+// 			let range = new vscode.Range(
+// 				new vscode.Position(line, match.index + 0),
+// 				new vscode.Position(line, match.index + (match[0].length > 50 ? match[0].length : 50))
+// 			)
+// 			let decoration = {
+// 				renderOptions: {
+// 					after: {
+// 						"color": {
+// 							"id": "sideDecorationForeground"
+// 						},
+// 						"contentText": "R1 = .label  // ERROR: .label underfined", // hard coded, don't tell anyone
+// 					}
+// 				},
+// 				range: range
+// 			}
+
+// 			decorationsArray.push(decoration)
+// 		}
+// 	}
+	
+// 	editor.setDecorations(decorationType, decorationsArray)
+// }
 
 
 const fileSelector = [
@@ -791,9 +908,13 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
 	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
-	// context.subscriptions.push(vscode.workspace.onDidChangeTextDocument()); // update while typing
-	// context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(fileSelector, DocumentLinkProvider));
-	// context.subscriptions.push(vscode.window.registerFileDecorationProvider());
+
+	// vscode.workspace.onDidChangeTextDocument(event => {
+	// 	const openEditor = vscode.window.visibleTextEditors.filter(
+	// 		editor => editor.document.uri === event.document.uri
+	// 	)[0];
+	// 	decorate(openEditor);
+	// })
 
 	// vscode.window.showInformationMessage(JSON.stringify(context));
 }
