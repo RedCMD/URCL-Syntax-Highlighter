@@ -622,7 +622,7 @@ function tokenizeDoc(document) {
 		tokens.push(token)
 	}
 	
-	vscode.window.showInformationMessage(JSON.stringify(tokens))
+	// vscode.window.showInformationMessage(JSON.stringify(tokens))
 	return tokens
 }
 
