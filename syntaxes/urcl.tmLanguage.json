@@ -4,7 +4,7 @@
 	"scopeName": "source.redcmd.syntax.urcl",
 	"patterns": [
 		{ "include": "#comment-line"	},
-		{ "include": "#macro"			},
+		{ "include": "#define"			},
 		{ "include": "#comment-block"	},
 		{ "include": "#preprocessor"	},
 		{ "include": "#instruction"		},
@@ -52,11 +52,12 @@
 			"match": "(@\\w*)",
 			"name": "keyword.control"
 		},
-		"macro": {
-			"match": "(@\\w*)(?:\\s+(.+))?",
+		"define": {
+			"match": "(@\\w*)(?:\\s+(\\S+)(?:\\s+(.+))?)?",
 			"captures": {
 				"1": { "name": "keyword.control" },
-				"2": { "patterns": [ { "include": "#macro-arguments" } ] }
+				"2": { "name": "string" },
+				"3": { "patterns": [ { "include": "#macro-arguments" } ] }
 			}
 		},
 		"macro-arguments": {
