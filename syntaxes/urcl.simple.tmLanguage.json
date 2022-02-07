@@ -55,7 +55,7 @@
 			"name": "punctuation.terminator.statement"
 		},
 		"register": {
-			"match": "(?i)(?<!\\w)([R$]\\d{1,4}+)\\b|\\b(SP|PC)\\b",
+			"match": "(?i)(?<!\\w)([R$]\\d+)\\b|\\b(SP|PC)\\b",
 			"captures": {
 				"1": { "name": "variable" },
 				"2": { "name": "support.class" }
@@ -80,7 +80,7 @@
 		},
 		"hexadecimal": {
 			"match": "\\h+",
-			"name": "constant.numeric.hexidecmal"
+			"name": "constant.numeric.hexadecimal"
 		},
 		"binary": {
 			"match": "[01]+",
