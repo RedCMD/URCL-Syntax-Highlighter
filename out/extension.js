@@ -918,6 +918,40 @@ const RenameProvider = {
 	}
 }
 
+const CompletionItemProvider = {
+
+	provideCompletionItems(document, position, token, context) {
+		const range = document.getWordRangeAtPosition(position)	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const word = document.getText(range)
+		const regexLabel = new RegExp(/^\.\w*$/m) // .label
+
+		if (regexLabel.test(word)) {	// test if selected word is a .label
+			const labelsDef = getLabels(document, 2)	// Definition .labels
+			const labelsRer = getLabels(document, 1)	// Reference .labels
+			let completions = []
+
+			if (getTokenAtPostion(position, labelsDef)) {
+				for (const label of labelsRer) {
+					if (labelsDef.find(object => object.symbol == label.symbol)
+						|| completions.find(object => object.label == label.symbol))
+						continue;
+					const completion = new vscode.CompletionItem(label.symbol, vscode.CompletionItemKind.Method)
+					completions.push(completion)
+				}
+			}
+			else if (getTokenAtPostion(position, labelsRer)) {
+				for (const label of labelsDef) {
+					if (completions.find(object => object.label === label.symbol))
+						continue
+					const completion = new vscode.CompletionItem(label.symbol, vscode.CompletionItemKind.Method)
+					completions.push(completion)
+				}
+			}
+			// vscode.window.showInformationMessage(JSON.stringify(completions))
+			return completions
+		}
+	}
+}
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
 	{ scheme: 'file', language:	'.urcl'			},
@@ -934,6 +968,7 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
 	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
 	// 	const openEditor = vscode.window.visibleTextEditors.filter(
