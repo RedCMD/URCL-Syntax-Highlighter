@@ -968,6 +968,27 @@ const CompletionItemProvider = {
 	}
 }
 
+
+const DocumentHighlightProvider = {
+	provideDocumentHighlights(document, position) {
+		const range = document.getWordRangeAtPosition(position)	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const word = document.getText(range)
+		const tokens = tokenizeDoc(document)
+		let highlights = []
+		let token
+		
+		while (token = tokens.pop())
+			if (token.symbol == word) {
+				const highlight = new vscode.DocumentHighlight(token.range)
+				highlights.push(highlight)
+			}
+		// vscode.window.showInformationMessage(JSON.stringify(highlights))
+		return highlights
+	}
+}
+
+
+
 function getComment(tokens, index) {
 // Prioritizes comments after the token (on the same line) before looking behind, one line above or infinite empty lines above
 	const line = tokens[index].range.start.line
@@ -1152,6 +1173,7 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(fileSelector, DocumentSymbolProvider)); // breadcrumbs
+	context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(fileSelector, DocumentHighlightProvider)); // highlight related symbols
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
 	// 	const openEditor = vscode.window.visibleTextEditors.filter(
