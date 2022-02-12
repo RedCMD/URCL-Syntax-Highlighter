@@ -892,6 +892,31 @@ const DefinitionProvider = {
 // 	editor.setDecorations(decorationType, decorationsArray)
 // }
 
+const RenameProvider = {
+
+	provideRenameEdits(document, position, newName, token) {
+		const workspaceEdit = new vscode.WorkspaceEdit()
+		const tokens = tokenizeDoc(document)
+		const oldName = getTokenAtPostion(position, tokens)
+		
+		for (const { name, symbol, range } of tokens)
+			// vscode.window.showInformationMessage(JSON.stringify(oldName))
+			if (symbol == oldName.symbol)
+				// if (name == oldName.name)
+					workspaceEdit.replace(document.uri, range, newName)
+				
+
+		// vscode.window.showInformationMessage(JSON.stringify(workspaceEdit))
+		return workspaceEdit
+	},
+	prepareRename(document, position, token) {
+		if (token.isCancellationRequested)
+			return;
+		const tokens = tokenizeDoc(document)
+		const oldName = getTokenAtPostion(position, tokens)
+		return oldName.range
+	}
+}
 
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
@@ -905,6 +930,7 @@ const fileSelector = [
 // main()
 function activate(context) {
 	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider)); // Numeric hovers
+	context.subscriptions.push(vscode.languages.registerRenameProvider(fileSelector, RenameProvider)); // rename related symbols
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
 	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
