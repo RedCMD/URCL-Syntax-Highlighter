@@ -27,8 +27,7 @@
 	],
 	"activationEvents": [
 		"onLanguage:.urcl",
-		"onLanguage:.simple.urcl",
-		"workspaceContains:**/*.urcl"
+		"onLanguage:.simple.urcl"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -120,6 +119,17 @@
 			{
 				"language": ".tuk",
 				"path": "./snippets/tuk.json"
+			}
+		],
+		"colors": [
+			{
+				"id": "sideDecorationForeground",
+				"description": "smth",
+				"defaults": {
+					"dark": "#ff0000ce",
+					"light": "#ff0000ce",
+					"highContrast": "#ff0000ce"
+				}
 			}
 		]
 	},

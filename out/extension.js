@@ -23,7 +23,7 @@ const HoverWords = [
 		symbol: "MINREG",
 		name: "Minimum registers",
 		example: "MINREG 16",
-		operands: [["Run"]],
+		operands: [["Immediate"]],
 		description: '"The minimum number of general purpose registers required by the program"',
 	},
 	{
@@ -44,7 +44,7 @@ const HoverWords = [
 		symbol: "RUN",
 		name: "Run mode",
 		example: "RUN RAM",
-		operands: [["Immediate"]],
+		operands: [["Run"]],
 		description: '"States whether or not the program must be stored in RAM"\n"Which can be read and written to during program execution"\n"This is for accessing .data values stored in the instructions"',
 	},
 	//	DEFINED IMMEDIATE VALUES
@@ -564,23 +564,24 @@ function sanitizeText(text, option) {
 			while (matchBlockComment = regexBlockComment.exec(match[2]))	// does not remove \n newlines
 				text = insertChars(text, match.index + matchBlockComment.index, matchBlockComment[0].length, ' ')
 		else if (option)	// remove "strings" and 'chars'
-			text = insertChars(text, match.index + 1, match[0].length - 2, '_')
+			text = insertChars(text, match.index + 1, match[0].length - 2, '#')
 
 	// vscode.window.showInformationMessage(text)
 	return text
 }
-
-
 function tokenizeDoc(document) {
-	const text = document.getText()
-	let tokens = []
-	let match = []
-	let regex = new RegExp([
+	let text = document.getText();
+	let tokens = [];
+	let match = [];
+	let matchBlockComment = [];
+	const regexBlockComment = /.+/g;
+	const regex = new RegExp([
 		/(?<comment_line>\/\/.*$)/,
-		/(?<comment_block>\/\*[\S\s]*?\*\/)/,	// match everything including newlines \r\n
+		/(?<comment_block>\/\*[\S\s]*?\*\/)/,
 		/(?<string>"[^"\r\n]*")/,
 		/(?<char>'[^'\r\n]*')/,
 		/(?<=^\s*)(?<instruction>ADD|AND|BEV|BGE|BLE|BNC|BNE|BNZ|BOD|BRC|BRE|BRG|BRL|BRN|BRP|BRZ|BSL|BSR|BSS|CAL|CPY|DEC|DIV|HLT|IMM|IN|INC|JMP|LLOD|LOD|LSH|LSTR|MLT|MOD|MOV|NAND|NEG|NOP|NOR|NOT|OR|OUT|POP|PSH|RET|RSH|SETC|SETE|SETG|SETGE|SETL|SETLE|SETNC|SETNE|SRS|STR|SUB|XNOR|XOR)/,
+		/(?<=^\s*)(?<dw>DW)/,
 		/(?<=^\s*)(?<header>BITS|RUN|MINREG|MINHEAP|MINSTACK)/,
 		/(?<=^\s*)(?<label_define>\.\w*)/,
 		/(?<label>\.\w*)/,
@@ -598,38 +599,47 @@ function tokenizeDoc(document) {
 		/(?<word>\w+)/,
 		/(?<invalid>(?!\/[\/\*])\S(?:(?!\/[/*])[^\s\w\[\]"'@#%$;,*=<>.+-])*)/,
 		/(?<unknown>\S)/,
-	].map(function (r) { return r.source }).join('|'), 'dgim');
-		// 'd' enables `indices`; which allows extracting which named capture group matched the input
-		// 'g' enables global; which is required for how Im using `.exec()`
-		// 'i' enables case-insensitive `minheap` == `mINhEap` == `MINHEAP`
-		// 'm' enables multiline mode; allowing `^` to match the start of a line and `$` to match the end of a line
-		// ~~'s' enables the dot `.` to match new lines \r\n~~		// used `\r?\n` instead
-
+	].map(function (r) { return r.source; }).join('|'), 'dgim');
+	// 'd' enables `indices`; which allows extracting which named capture group matched the input
+	// 'g' enables global; which is required for how Im using `.exec()`
+	// 'i' enables case-insensitive `minheap` == `mINhEap` == `MINHEAP`
+	// 'm' enables multiline mode; allowing `^` to match the start of a line and `$` to match the end of a line
+	// ~~'s' enables the dot `.` to match new lines \r\n~~		// used `\r?\n` instead
 	// vscode.window.showInformationMessage(regex.toString())
 	while (match = regex.exec(text)) {
-		const captureGroups = Object.entries(match.indices.groups)
+		const captureGroups = Object.entries(match['indices'].groups);
 		// find the name and matched text of the first (and only) matching capture group
 		for (var index = 0; index < captureGroups.length; index++)
 			if (captureGroups[index][1] != null)
-				break
+				break;
 		// vscode.window.showInformationMessage(captureGroups[index][0])
-		const name = captureGroups[index][0]
-		const positionStart = document.positionAt(match.index)
-		const positionEnd = document.positionAt(match.index + match[0].length)
-		const range = new vscode.Range(positionStart, positionEnd)
-		const token = { name: name, symbol: match[0], range: range }
+		const name = captureGroups[index][0];
+		const positionStart = document.positionAt(match.index);
+		const positionEnd = document.positionAt(match.index + match[0].length);
+		const range = new vscode.Range(positionStart, positionEnd);
+		// const token = { name: name, symbol: match[0], range: [{ line: 123, character: 0 }, { line: 123, character: 7 }] }
+		const token = { name: name, symbol: match[0], range: range };
 		// vscode.window.showInformationMessage(JSON.stringify(token))
-		tokens.push(token)
+		tokens.push(token);
+
+		// replace /*block comments*/ with whitespace
+		// This allows regexs that require whitespace only between match and start of line
+		if (name == 'comment_block')
+			while (matchBlockComment = regexBlockComment.exec(match[index + 1])) // does not remove \n newlines
+				text = insertChars(text, match.index + matchBlockComment.index, matchBlockComment[0].length, ' ');
 	}
-	
+
 	// vscode.window.showInformationMessage(JSON.stringify(tokens))
-	return tokens
+	return tokens;
 }
 
+function getTokenAtPostion(position, tokens) {
+	return tokens.find(token => token.range.contains(position))
+}
 
 function getLabels(document, option) {
-	let labels = []
 	const tokens = tokenizeDoc(document)
+	let labels = []
 	let token
 	
 	// option:0 all .labels
@@ -665,7 +675,7 @@ const HoverProvider = {
 		let hoverWord = document.getText(range);
 		var markdownString = new vscode.MarkdownString();
 		
-		const HoverWordObject = HoverWords.find(o => o.symbol === hoverWord.toUpperCase())
+		const HoverWordObject = HoverWords.find(object => object.symbol === hoverWord.toUpperCase())
 		if (HoverWordObject) {
 			const operands = HoverWordObject.operands.length
 			markdownString.appendCodeblock(HoverWordObject.example, '.urcl')
@@ -809,6 +819,7 @@ const CodelensProvider = {
 				locations
 			]
 		}
+		codeLens.isResolved = true
 		return codeLens
 	}
 }
@@ -817,15 +828,16 @@ const CodelensProvider = {
 const ReferenceProvider = {
 	provideReferences(document, position, context, token) {
 		const range = document.getWordRangeAtPosition(position);	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const hoveredWord = document.getText(range);
-		const regexlabel = new RegExp(/^\.\w+$/m); // .label
-		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
+		const word = document.getText(range);
+		const regex = new RegExp(/^\.\w+$/m); // .label
+		
+		if (regex.test(word)) {	// test if selected word is a .label
 			const tokens = tokenizeDoc(document)
 			let locations = []
 			
 			while (token = tokens.pop())
 				if (token.name.startsWith('label'))
-					if (token.symbol == hoveredWord)
+					if (token.symbol == word)
 						locations.push(new vscode.Location(document.uri, token.range))
 			
 			if (!locations)
@@ -839,12 +851,12 @@ const ReferenceProvider = {
 
 const DefinitionProvider = {
 	provideDefinition(document, position, token) {
-		const range = document.getWordRangeAtPosition(position);	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
-		const hoveredWord = document.getText(range);
-		const regexlabel = new RegExp(/^\.\w+$/m); // .label
+		const range = document.getWordRangeAtPosition(position)	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
+		const hoveredWord = document.getText(range)
+		const regexlabel = new RegExp(/^\.\w+$/m) // .label
 		
 		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
-			let labels = getLabels(document, 2)	// get a list of all labels in doc
+			let labels = getLabels(document, 0)	// get a list of all labels in doc
 			let label
 			let locations = []
 			
@@ -871,7 +883,8 @@ const DefinitionProvider = {
 // 	rangeBehavior: vscode.DecorationRangeBehavior.ClosedOpen,
 	
 // })
-// function decorate(editor) {
+// function decorate(event) {
+// 	const editor = validate(event)
 // 	let sourceCode = editor.document.getText()
 // 	let regex = /(mov.*)/i
 
@@ -883,7 +896,7 @@ const DefinitionProvider = {
 // 		let match = sourceCodeArr[line].match(regex)
 
 // 		if (match !== null && match.index !== undefined) {
-// 			// vscode.window.showInformationMessage(JSON.stringify(match[0].length));
+// 			// vscode.window.showInformationMessage(JSON.stringify(match[0].length))
 // 			let range = new vscode.Range(
 // 				new vscode.Position(line, match.index + 0),
 // 				new vscode.Position(line, match.index + (match[0].length > 50 ? match[0].length : 50))
@@ -904,7 +917,15 @@ const DefinitionProvider = {
 // 		}
 // 	}
 	
+// 	// vscode.window.showInformationMessage(JSON.stringify(editor))
+// 	// vscode.window.showInformationMessage(sourceCode)
 // 	editor.setDecorations(decorationType, decorationsArray)
+// }
+
+// function validate(event) {
+// 	if (event.document == vscode.window.activeTextEditor.document)
+// 		if (fileSelector.some(file => file.language === event.document.languageId))
+// 			return vscode.window.activeTextEditor
 // }
 
 const RenameProvider = {
@@ -1155,34 +1176,70 @@ const DocumentSymbolProvider = {
 		return symbolsLabel
 	}
 }
+
+
+// const SignatureHelpProvider = {
+// 	provideSignatureHelp(document, position, token, context) {
+// 		const tokens = tokenizeDoc(document)
+// 		const token2 = getTokenAtPostion(position, tokens)
+// 		// for (let index = 0; index < array.length; index++) {
+// 		// 	const element = array[index];
+			
+// 		// }
+// 		var markdownString = new vscode.MarkdownString()
+// 		markdownString.appendCodeblock(token2.symbol + ' R1 $2 3', '.simple.urcl');
+// 		const signature = new vscode.SignatureInformation('', markdownString)
+// 		const signatures = new vscode.SignatureHelp
+// 		signatures.signatures.push(signature)
+// 		vscode.window.showInformationMessage(JSON.stringify(signatures))
+// 		return signatures
+// 	}
+// }
+
+
+
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
 	{ scheme: 'file', language:	'.urcl'			},
-	{ scheme: 'file', language:	'.simple.urcl'	},
-	{ scheme: 'file', pattern:	'**/*.urcl'		},
-	{ scheme: 'file', pattern:	'**/*.urclpp'	},
-	{ scheme: 'file', pattern:	'**/urcl'		},
-	{ scheme: 'file', pattern:	'**/urclpp'		}
+	{ scheme: 'file', language:	'.simple.urcl'	}
 ];
 // main()
 function activate(context) {
-	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider)); // Numeric hovers
+	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider)); // Hovers
 	context.subscriptions.push(vscode.languages.registerRenameProvider(fileSelector, RenameProvider)); // rename related symbols
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
 	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition(s)
+	// context.subscriptions.push(vscode.languages.registerSignatureHelpProvider(fileSelector, SignatureHelpProvider, [' '])); // hover instruction definition
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(fileSelector, DocumentSymbolProvider)); // breadcrumbs
 	context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(fileSelector, DocumentHighlightProvider)); // highlight related symbols
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
-	// 	const openEditor = vscode.window.visibleTextEditors.filter(
-	// 		editor => editor.document.uri === event.document.uri
+	// 	// vscode.window.showInformationMessage(JSON.stringify(event));
+		// const openEditor = vscode.window.visibleTextEditors.filter(
+	// 		// editor => (editor.document.uri === event.document.uri/*  && (
+	// 		// 	editor.document.languageId == "urcl" ||
+	// 		// 	editor.document.languageId == ".urcl" ||
+	// 		// 	editor.document.languageId == ".simple.urcl"
+	// 		// ) */)
+	// 		editor => (editor.document.uri === event.document.uri/*  && (
+	// 			editor.document == { scheme: 'file', language: 'javascript' }
+	// 		) */)
 	// 	)[0];
 	// 	decorate(openEditor);
 	// })
 
-	// vscode.window.showInformationMessage(JSON.stringify(context));
+	// vscode.workspace.onDidChangeTextDocument(event => {
+	// 	if (event.document == vscode.window.activeTextEditor.document)
+	// 		if (fileSelector.some(file => file.language === event.document.languageId))
+	// 			decorate(vscode.window.activeTextEditor)
+	// })
+	// vscode.workspace.onDidChangeTextDocument(event => { decorate(event) })
+	// vscode.workspace.onDidChangeConfiguration(event => { decorate(event) })
+	// mov
+
+	// vscode.window.showInformationMessage(JSON.stringify(context))
 }
 
 

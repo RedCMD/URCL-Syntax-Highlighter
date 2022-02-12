@@ -352,11 +352,5 @@
 		"prefix": "XOR",
 		"body": "XOR\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}$0",
 		"comment": "XOR R1 R2 R3 - XOR R1 R2 1 - XOR R1 1 R3"
-	},
-	"DBLE_BGE": {
-		"description": "Branch if greater than or equal to, 4 Opperands: Branches to a specified address if one value is greater than or equal to another value. Multiword version of BGE",
-		"prefix": "DBLE_BGE",
-		"body": "DBLE_BGE\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}\t${1|R,$|}${2:3}\t${1|R,$|}${2:4}$0",
-		"comment": "BGE .foo R2 R3 - BGE .foo R2 1 - BGE .foo 1 R3 - BGE R1 R2 R3 - BGE R1 R2 1 - BGE R1 1 R3"
 	}
 }
