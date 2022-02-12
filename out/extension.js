@@ -644,6 +644,21 @@ function getLabels(document, option) {
 	return labels
 }
 
+function removePrefix(symbol) {
+	if (!symbol)
+		return ''
+	const regex = new RegExp([
+		/(?<=^(?:[@\.$R#M~%]|\/\/|~?[-+])\s*)[^\s].*$/,
+		/(?<=^\/\*\s*)[^\s].*?(?=\s*\*\/$)/,
+		/(?<=^"\s*)[^\s].*?(?=\s*"$)/,
+		/(?<=^'\s*)[^\s].*?(?=\s*'$)/,
+		// /(?<=^\s*)[^\s].*?(?=\s*$)/,
+	].map(function (r) { return r.source }).join('|'), 'is');
+	// const regex = /(?<=^(?:[@\.$R#M~%]|\/\/|~?[-+])\s*)[^\s].*$|(?<=^\/\*\s*)[^\s].*?(?=\s*\*\/$)|(?<=^"\s*)[^\s].*?(?=\s*"$)|(?<=^'\s*)[^\s].*?(?=\s*'$)|(?<=^\s*).*?(?=\s*$)/si
+	const symbolContent = regex.exec(symbol)
+	return symbolContent[0]
+}
+
 const HoverProvider = {
 	provideHover(document, position, token) {
 		const range = document.getWordRangeAtPosition(position)	//`Word` is defined by "wordPattern" in `urcl.language-configuration.json`
@@ -952,6 +967,173 @@ const CompletionItemProvider = {
 		}
 	}
 }
+
+function getComment(tokens, index) {
+// Prioritizes comments after the token (on the same line) before looking behind, one line above or infinite empty lines above
+	const line = tokens[index].range.start.line
+	if (index + 1 < tokens.length) {
+		const token = tokens[index + 1]
+		if (token.range.start.line == line)
+			if (token.name == 'comment_line' || token.name == 'comment_block')
+				return token
+	}
+	if (index > 0) {
+		const token = tokens[index - 1]
+		if (token.range.end.line + 1 >= line)
+			if (token.name == 'comment_line' || token.name == 'comment_block')
+				return token
+	}
+	return {}
+}
+
+const SymbolKind = {
+	"macro": vscode.SymbolKind.Namespace,
+	"label": vscode.SymbolKind.Method,
+	"instrucion": vscode.SymbolKind.Field,
+	"port": vscode.SymbolKind.Interface,
+	"register": vscode.SymbolKind.Variable,
+	"define": vscode.SymbolKind.Constant,
+	"string": vscode.SymbolKind.String,
+	"char": vscode.SymbolKind.String,
+	"numeric": vscode.SymbolKind.Number,
+	"memory": vscode.SymbolKind.Array,
+	// "File": vscode.SymbolKind.File,
+	// "Module": vscode.SymbolKind.Module,
+	// "Namespace": vscode.SymbolKind.Namespace,
+	// "Package": vscode.SymbolKind.Package,
+	// "Class": vscode.SymbolKind.Class,
+	// "Method": vscode.SymbolKind.Method,
+	// "Property": vscode.SymbolKind.Property,
+	// "Field": vscode.SymbolKind.Field,
+	// "Constructor": vscode.SymbolKind.Constructor,
+	// "Enum": vscode.SymbolKind.Enum,
+	// "Interface": vscode.SymbolKind.Interface,
+	// "Function": vscode.SymbolKind.Function,
+	// "Variable": vscode.SymbolKind.Variable,
+	// "Constant": vscode.SymbolKind.Constant,
+	// "String": vscode.SymbolKind.String,
+	// "Number": vscode.SymbolKind.Number,
+	// "Boolean": vscode.SymbolKind.Boolean,
+	// "Array": vscode.SymbolKind.Array,
+	// "Object": vscode.SymbolKind.Object,
+	// "Key": vscode.SymbolKind.Key,
+	// "Null": vscode.SymbolKind.Null,
+	// "EnumMember": vscode.SymbolKind.EnumMember,
+	// "Struct": vscode.SymbolKind.Struct,
+	// "Event": vscode.SymbolKind.Event,
+	// "Operator": vscode.SymbolKind.Operator,
+	// "TypeParameter": vscode.SymbolKind.TypeParameter,
+
+}
+const DocumentSymbolProvider = {
+	provideDocumentSymbols(document) {
+		const tokens = tokenizeDoc(document)
+		let symbolsLabel = []
+
+		for (let index = 0; index < tokens.length; index++) {
+			const token = tokens[index];
+
+			if (token.name == 'label_define') {
+				let detailLabel = removePrefix(getComment(tokens, index).symbol)
+				let symbolsAsm = []
+
+				for (; index + 1 < tokens.length; index++) {
+					const tokenAsm = tokens[index + 1]
+
+					if (tokenAsm.name == 'label_define')
+						break
+
+					if (tokenAsm.name == 'instruction' || tokenAsm.name == 'header' || tokenAsm.name == 'dw' || tokenAsm.name == 'define') {
+						let symbolsOp = []
+
+						for (; index + 2 < tokens.length; index++) {
+							const tokenOp = tokens[index + 2]
+							// vscode.window.showInformationMessage(JSON.stringify(tokenOp))
+							if (tokenOp.range.start.line != tokenAsm.range.start.line || tokenOp.name == 'comment_line')
+								break
+							if (tokenOp.name == 'comment_block')
+								continue
+							const documentSymbolOp = new vscode.DocumentSymbol(
+								tokenOp.symbol,
+								tokenOp.name,
+								SymbolKind[tokenOp.name],
+								tokenOp.range,
+								tokenOp.range
+							)
+							symbolsOp.push(documentSymbolOp)
+						}
+						// vscode.window.showInformationMessage(JSON.stringify(symbolsOp))
+						
+						const tokenStart = tokenAsm.range.start
+
+						const rangeAsm = new vscode.Range(
+							tokenStart,
+							new vscode.Position(
+								tokenStart.line,
+								document.lineAt(tokenStart.line).range.end.character
+							)
+						)
+						const detailAsm = document.getText(rangeAsm).slice(tokenAsm.range.end.character)
+
+						const documentSymbolAsm = new vscode.DocumentSymbol(
+							tokenAsm.symbol,
+							detailAsm,
+							vscode.SymbolKind.Method,
+							rangeAsm,
+							tokenAsm.range
+						)
+						
+						documentSymbolAsm.children = symbolsOp
+						symbolsAsm.push(documentSymbolAsm)
+					}
+				}
+				// vscode.window.showInformationMessage(JSON.stringify(symbolsAsm))
+
+				const range = new vscode.Range(token.range.start, tokens[index].range.end)
+				const documentSymbol = new vscode.DocumentSymbol(
+					token.symbol,
+					detailLabel,
+					vscode.SymbolKind.Method,
+					range,
+					token.range
+				)
+
+				documentSymbol.children = symbolsAsm
+				symbolsLabel.push(documentSymbol)
+			}
+		}
+
+		// symbolsLabel.push(new vscode.DocumentSymbol('File', 'File', vscode.SymbolKind.File, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Module', 'Module', vscode.SymbolKind.Module, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Namespace', 'Namespace', vscode.SymbolKind.Namespace, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Package', 'Package', vscode.SymbolKind.Package, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Class', 'Class', vscode.SymbolKind.Class, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Method', 'Method', vscode.SymbolKind.Method, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Property', 'Property', vscode.SymbolKind.Property, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Field', 'Field', vscode.SymbolKind.Field, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Constructor', 'Constructor', vscode.SymbolKind.Constructor, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Enum', 'Enum', vscode.SymbolKind.Enum, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Interface', 'Interface', vscode.SymbolKind.Interface, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Function', 'Function', vscode.SymbolKind.Function, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Variable', 'Variable', vscode.SymbolKind.Variable, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Constant', 'Constant', vscode.SymbolKind.Constant, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('String', 'String', vscode.SymbolKind.String, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Number', 'Number', vscode.SymbolKind.Number, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Boolean', 'Boolean', vscode.SymbolKind.Boolean, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Array', 'Array', vscode.SymbolKind.Array, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Object', 'Object', vscode.SymbolKind.Object, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Key', 'Key', vscode.SymbolKind.Key, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Null', 'Null', vscode.SymbolKind.Null, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('EnumMember', 'EnumMember', vscode.SymbolKind.EnumMember, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Struct', 'Struct', vscode.SymbolKind.Struct, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Event', 'Event', vscode.SymbolKind.Event, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('Operator', 'Operator', vscode.SymbolKind.Operator, new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		// symbolsLabel.push(new vscode.DocumentSymbol('TypeParameter',	'TypeParameter', vscode.SymbolKind.TypeParameter,	new vscode.Range(0, 0, 0, 0), new vscode.Range(0, 0, 0, 0)))
+		
+		// vscode.window.showInformationMessage(JSON.stringify(symbolsLabel))
+		return symbolsLabel
+	}
+}
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
 	{ scheme: 'file', language:	'.urcl'			},
@@ -969,6 +1151,7 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(fileSelector, DocumentSymbolProvider)); // breadcrumbs
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
 	// 	const openEditor = vscode.window.visibleTextEditors.filter(
