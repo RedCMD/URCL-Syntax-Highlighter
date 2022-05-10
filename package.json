@@ -57,6 +57,19 @@
 				"configuration": "./urcl.language-configuration.json"
 			},
 			{
+				"id": "urclpp",
+				"aliases": [
+					"RedCMD.URCL++"
+				],
+				"extensions": [
+					".urclpp"
+				],
+				"filenames": [
+					"URCLPP"
+				],
+				"configuration": "./urclpp.language-configuration.json"
+			},
+			{
 				"id": ".b",
 				"aliases": [
 					"RedCMD.B"
@@ -89,6 +102,11 @@
 				"path": "./syntaxes/urcl.simple.tmLanguage.json"
 			},
 			{
+				"language": "urclpp",
+				"scopeName": "source.redcmd.syntax.urclpp",
+				"path": "./syntaxes/urclpp.tmLanguage.json"
+			},
+			{
 				"language": ".b",
 				"scopeName": "source.redcmd.syntax.b",
 				"path": "./syntaxes/b.tmLanguage.json"
@@ -114,6 +132,14 @@
 			},
 			{
 				"language": ".simple.urcl",
+				"path": "./snippets/urcl-instructions.json"
+			},
+			{
+				"language": "urclpp",
+				"path": "./snippets/urcl.json"
+			},
+			{
+				"language": "urclpp",
 				"path": "./snippets/urcl-instructions.json"
 			},
 			{

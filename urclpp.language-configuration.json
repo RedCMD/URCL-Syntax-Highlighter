@@ -1,0 +1,56 @@
+{
+	"comments": {
+		// symbol used for single line comment. Remove this entry if your language does not support line comments
+		"lineComment": "//",
+		// symbols used for start and end a block comment. Remove this entry if your language does not support block comments
+		"blockComment": [ "/*", "*/" ]
+	},
+	// symbols used as brackets
+	"brackets": [
+		["IF", "END"],
+		["FOR", "END"],
+		["WHILE", "END"],
+		["(", ")"],
+		["[", "]"],
+		["/*", "*/"]
+	],
+	// symbols that are auto closed when typing
+	"autoClosingPairs": [
+		["IF", "END"],
+		["FOR", "END"],
+		["WHILE", "END"],
+		["(", ")"],
+		["[", "]"],
+		["'", "'"],
+		["\"","\""],
+		["/*", "*/"]
+	],
+	// symbols that can be used to surround a selection
+	"surroundingPairs": [
+		["IF", "END"],
+		["FOR", "END"],
+		["WHILE", "END"],
+		["(", ")"],
+		["[", "]"],
+		["'", "'"],
+		["\"","\""]
+	],
+	"colorizedBracketPairs": [
+		["IF", "END"],
+		["FOR", "END"],
+		["WHILE", "END"],
+		["(", ")"],
+		["[", "]"],
+		["'", "'"],
+		["\"","\""],
+		["/*", "*/"]
+	],
+	"autoCloseBefore": " \t\n",
+	"folding": {
+		"markers": {
+			"start": "^\\s*/\\*(?!.*\\*/).*$|^\\s*(IF|FOR|WHILE|if|for|while)",
+			"end": "^.*?\\*/\\s*$|(END|end)\\s*$"
+		}
+	},
+	"wordPattern": "((?<=^\\s*|\\*/)([a-zA-Z]+|@\\w*)|(?<=^|\\*/|[\\[\\]\\s<>,])\\.\\w*|(?<=\\*/|[\\[\\]\\s<>,])([#Mm][0-9]*|%\\w*|@[a-zA-Z]*|[$Rr]\\d?|(~?[+-])?(0[Xx][0-9a-fA-F]*|0[Bb][01]*|0[Oo][0-7]*|[0-9]+)|~([+-]\\d*)?|[+-]\\d*|'(\\\\u[0-9a-fA-F]{0,4}|\\\\?.)'))(?=$|/[*/]|[\\[\\]\\s<>,])"
+}

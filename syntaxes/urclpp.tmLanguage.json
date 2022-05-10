@@ -1,0 +1,110 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Simple URCL Syntax",
+	"scopeName": "source.redcmd.syntax.urclpp",
+	"patterns": [
+		{ "include": "#IF"				},
+		{ "include": "#FOR"				},
+		{ "include": "#WHILE"			},
+		{ "include": "#SWITCH"			},
+		{ "include": "#preprocessor"	},
+		{ "include": "#parenthesis"		},
+		{ "include": "source.redcmd.syntax.simple.urcl" }
+	],
+	"repository": {
+		"preprocessor": {
+			"match": "\\b(?i:LCAL|DEFINE)\\b",
+			"name": "keyword.control"
+		},
+		"IF": {
+			"begin": "(?i)\\bIF\\b",
+			"end": "(?i)\\bEND\\b",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "#ELIF" },
+				{ "include": "#ELSE" },
+				{ "include": "$self" }
+			]
+		},
+		"ELIF": {
+			"begin": "(?i)\\bELIF\\b",
+			"end": "(?i)(?=\\bEND\\b)",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "#ELIF" },
+				{ "include": "#ELSE" },
+				{ "include": "$self" }
+			]
+		},
+		"ELSE": {
+			"begin": "(?i)\\bELSE\\b",
+			"end": "(?i)(?=\\bEND\\b)",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "$self" }
+			]
+		},
+		"FOR": {
+			"begin": "(?i)\\bFOR\\b",
+			"end": "(?i)\\bEND\\b",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "$self" }
+			]
+		},
+		"WHILE": {
+			"begin": "(?i)\\bWHILE\\b",
+			"end": "(?i)\\bEND\\b",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "$self" }
+			]
+		},
+		"EXIT": {
+			"match": "(?i)\\bEXIT\\b",
+			"name": "keyword.control"
+		},
+		"SKIP": {
+			"match": "(?i)\\bSKIP\\b",
+			"name": "keyword.control"
+		},
+		"SWITCH": {
+			"begin": "(?i)\\bSWITCH\\b",
+			"end": "(?i)(?=\\bEND\\b)",
+			"captures": { "0": { "name": "keyword.control" } },
+			"patterns": [
+				{ "include": "#DEFAULT" },
+				{ "include": "#CASE" },
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" },
+				{ "include": "$self" }
+			]
+		},
+		"DEFAULT": {
+			"match": "(?i)\\bDEFAULT\\b",
+			"name": "keyword.control"
+		},
+		"CASE": {
+			"match": "(?i)\\bCASE\\b",
+			"name": "keyword.control"
+		},
+		"parenthesis": {
+			"match": "[()]",
+			"name": "entity.name.label"
+		},
+		"label": {
+			"match": "(?<!\\w)\\.\\w+\\b",
+			"name": "support.function"
+		}
+	}
+}
