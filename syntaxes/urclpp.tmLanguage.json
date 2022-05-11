@@ -91,7 +91,7 @@
 			"name": "entity.name.label"
 		},
 		"label": {
-			"match": "(?<!\\w)\\.\\w+\\b",
+			"match": "(?<!\\w)(?>\\.\\w+)+",
 			"name": "support.function"
 		},
 		"invalid": {
