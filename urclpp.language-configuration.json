@@ -10,6 +10,7 @@
 		["IF", "END"],
 		["FOR", "END"],
 		["WHILE", "END"],
+		["SWITCH", "END"],
 		["(", ")"],
 		["[", "]"],
 		["/*", "*/"]
@@ -19,6 +20,7 @@
 		["IF", "END"],
 		["FOR", "END"],
 		["WHILE", "END"],
+		["SWITCH", "END"],
 		["(", ")"],
 		["[", "]"],
 		["'", "'"],
@@ -30,6 +32,7 @@
 		["IF", "END"],
 		["FOR", "END"],
 		["WHILE", "END"],
+		["SWITCH", "END"],
 		["(", ")"],
 		["[", "]"],
 		["'", "'"],
@@ -39,6 +42,7 @@
 		["IF", "END"],
 		["FOR", "END"],
 		["WHILE", "END"],
+		["SWITCH", "END"],
 		["(", ")"],
 		["[", "]"],
 		["'", "'"],
@@ -48,7 +52,7 @@
 	"autoCloseBefore": " \t\n",
 	"folding": {
 		"markers": {
-			"start": "^\\s*/\\*(?!.*\\*/).*$|^\\s*(IF|FOR|WHILE|if|for|while)",
+			"start": "^\\s*/\\*(?!.*\\*/).*$|^\\s*(IF|FOR|WHILE|SWITCH|if|for|while|switch)",
 			"end": "^.*?\\*/\\s*$|(END|end)\\s*$"
 		}
 	},

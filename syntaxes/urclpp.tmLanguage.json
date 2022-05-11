@@ -80,23 +80,15 @@
 		},
 		"SWITCH": {
 			"begin": "(?i)\\bSWITCH\\b",
-			"end": "(?i)(?=\\bEND\\b)",
+			"end": "(?i)\\bEND\\b",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
-				{ "include": "#DEFAULT" },
-				{ "include": "#CASE" },
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
+				{
+					"match": "\\b(?i:DEFAULT|CASE)\\b",
+					"name": "keyword.control"
+				},
 				{ "include": "$self" }
 			]
-		},
-		"DEFAULT": {
-			"match": "(?i)\\bDEFAULT\\b",
-			"name": "keyword.control"
-		},
-		"CASE": {
-			"match": "(?i)\\bCASE\\b",
-			"name": "keyword.control"
 		},
 		"parenthesis": {
 			"match": "[()]",
