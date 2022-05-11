@@ -2,6 +2,14 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Simple URCL Syntax",
 	"scopeName": "source.redcmd.syntax.urclpp",
+	"injections": {
+		"L:loop.urclpp": {
+			"patterns": [
+				{ "include": "#EXIT" },
+				{ "include": "#SKIP" }
+			]
+		}
+	},
 	"patterns": [
 		{ "include": "#IF"				},
 		{ "include": "#FOR"				},
@@ -9,11 +17,13 @@
 		{ "include": "#SWITCH"			},
 		{ "include": "#preprocessor"	},
 		{ "include": "#parenthesis"		},
+		{ "include": "#label"			},
+		{ "include": "#invalid"			},
 		{ "include": "source.redcmd.syntax.simple.urcl" }
 	],
 	"repository": {
 		"preprocessor": {
-			"match": "\\b(?i:LCAL|DEFINE)\\b",
+			"match": "\\b(?i:LCAL|DEFINE|OUTS|OPS|REG|TEMP|IMPORT)\\b",
 			"name": "keyword.control"
 		},
 		"IF": {
@@ -21,8 +31,6 @@
 			"end": "(?i)\\bEND\\b",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
 				{ "include": "#ELIF" },
 				{ "include": "#ELSE" },
 				{ "include": "$self" }
@@ -33,8 +41,6 @@
 			"end": "(?i)(?=\\bEND\\b)",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
 				{ "include": "#ELIF" },
 				{ "include": "#ELSE" },
 				{ "include": "$self" }
@@ -44,31 +50,21 @@
 			"begin": "(?i)\\bELSE\\b",
 			"end": "(?i)(?=\\bEND\\b)",
 			"captures": { "0": { "name": "keyword.control" } },
-			"patterns": [
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
-				{ "include": "$self" }
-			]
+			"patterns": [ { "include": "$self" } ]
 		},
 		"FOR": {
 			"begin": "(?i)\\bFOR\\b",
 			"end": "(?i)\\bEND\\b",
+			"contentName": "loop.urclpp",
 			"captures": { "0": { "name": "keyword.control" } },
-			"patterns": [
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
-				{ "include": "$self" }
-			]
+			"patterns": [ { "include": "$self" } ]
 		},
 		"WHILE": {
 			"begin": "(?i)\\bWHILE\\b",
 			"end": "(?i)\\bEND\\b",
+			"contentName": "loop.urclpp",
 			"captures": { "0": { "name": "keyword.control" } },
-			"patterns": [
-				{ "include": "#EXIT" },
-				{ "include": "#SKIP" },
-				{ "include": "$self" }
-			]
+			"patterns": [ { "include": "$self" } ]
 		},
 		"EXIT": {
 			"match": "(?i)\\bEXIT\\b",
@@ -97,6 +93,10 @@
 		"label": {
 			"match": "(?<!\\w)\\.\\w+\\b",
 			"name": "support.function"
+		},
+		"invalid": {
+			"match": "(?i)EXIT|SKIP|DEFAULT|CASE",
+			"name": "invalid"
 		}
 	}
 }
