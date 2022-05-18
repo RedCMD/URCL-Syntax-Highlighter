@@ -6,6 +6,7 @@
 		{ "include": "#comment-block"	},
 		{ "include": "#comment-line"	},
 		{ "include": "#square-bracket"	},
+		{ "include": "#angle-bracket"	},
 		{ "include": "#preprocessor"	},
 		{ "include": "#instruction"		},
 		{ "include": "#comparison"		},
@@ -64,6 +65,10 @@
 		"variable": {
 			"match": "(?<=[\\s<>,])[A-Za-z]\\w*(?=[\\s<>;,])"
 		},
+		"angle-bracket": {
+			"begin": "<",
+			"end": ">",
+			"captures": { "0": { "name": "angle-bracket.urclpp" } },
 		"square-bracket": {
 			"match": "\\[|]",
 			"name": "entity.name.label"
