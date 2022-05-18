@@ -36,11 +36,11 @@
 			"name": "comment"
 		},
 		"preprocessor": {
-			"match": "(?i)\\b(BITS|RUN|R[AO]M|MIN(?:HEAP|REG|STACK))\\b",
+			"match": "\\b(?i:BITS|RUN|R[AO]M|MIN(?:HEAP|REG|STACK))\\b",
 			"name": "keyword.control"
 		},
 		"instruction": {
-			"match": "\\b(?i:ADD|BEV|BN[CZ]|BOD|BR[CENPZ]|BS[LSR]|B[GLN]E|CAL|CPY|DEC|D[DQW]|[HM]LT|IMM|INC?|JMP|LL?OD|[LRP]SH|L?STR|MO[DV]|N?AND|NEG|NO[PT]|OUT|POP|RET|SET(?:N?[CE])|SRS|SUB|S?(?>DIV|BR[GL]|B[GL]E|SET[GL]E?)|X?N?OR)\\b",
+			"match": "\\b(?i:ADD|BEV|BN[CZ]|BOD|BR[CENPZ]|BS[LSR]|B[GLN]E|CAL|CPY|DEC|D[DQW]|[HM]LT|IMM|INC?|JMP|LL?OD|[LRP]SH|L?STR|MO[DV]|N?AND|NEG|NO[PT]|OUT|POP|RET|SETN?[CE]|SRS|SUB|S?(?>DIV|BR[GL]|B[GL]E|SET[GL]E?)|X?N?OR)\\b",
 			"name": "keyword"
 		},
 		"instruction??": {
@@ -56,22 +56,32 @@
 			"name": "punctuation.terminator.statement"
 		},
 		"register": {
-			"match": "(?i)(?<!\\w)([R$]\\d+)\\b|\\b(SP|PC)\\b",
-			"captures": {
-				"1": { "name": "variable" },
-				"2": { "name": "support.class" }
-			}
+			"patterns": [
+				{
+					"match": "(?<!\\w)([$Rr]\\d+)\\b",
+					"name": "variable"
+				},
+				{
+					"match": "\\b(?i:SP|PC)\\b",
+					"name": "support.class"
+				}
+			]
 		},
 		"variable": {
-			"match": "(?<=[\\s<>,])[A-Za-z]\\w*(?=[\\s<>;,])"
+			"match": "(?<=[]\\[()\\s<>,])[A-Za-z]\\w*(?=[]\\[()\\s<>;,])",
+			"name": "variable markup.italic"
 		},
 		"angle-bracket": {
 			"begin": "<",
 			"end": ">",
 			"captures": { "0": { "name": "angle-bracket.urclpp" } },
+			"patterns": [ { "include": "$base" } ]
+		},
 		"square-bracket": {
-			"match": "\\[|]",
-			"name": "entity.name.label"
+			"begin": "\\[",
+			"end": "]",
+			"captures": { "0": { "name": "square-bracket.urclpp" } },
+			"patterns": [ { "include": "$base" } ]
 		},
 		"numeric": {
 			"match": "(?<!\\w)(?:~?[-+])?(?:0(?:x(.*?)|b(.*?)|o(.*?))|(\\d.*?))\\b",
@@ -139,7 +149,7 @@
 			"name": "keyword.control"
 		},
 		"invalid": {
-			"match": "[^\\w\\s][^]\\[\\w\\s\"/@$#;<>+=~.'-]*",
+			"match": "[^\\w\\s][^]\\[()\\w\\s\"/@$#;<>+=~.'-]*",
 			"name": "invalid"
 		},
 		"invalid-illegal": {

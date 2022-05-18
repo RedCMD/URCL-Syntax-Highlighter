@@ -4,6 +4,7 @@
 	"scopeName": "source.redcmd.syntax.urclpp",
 	"injections": {
 		"L:loop.urclpp": {
+			"comment": "Injectins will inject themselves into every nested level of the target scope",
 			"patterns": [
 				{ "include": "#EXIT" },
 				{ "include": "#SKIP" }
@@ -27,8 +28,8 @@
 			"name": "keyword.control"
 		},
 		"IF": {
-			"begin": "(?i)\\bIF\\b",
-			"end": "(?i)\\bEND\\b",
+			"begin": "\\b(?i:IF)\\b",
+			"end": "\\b(?i:END)\\b",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
 				{ "include": "#ELIF" },
@@ -37,8 +38,8 @@
 			]
 		},
 		"ELIF": {
-			"begin": "(?i)\\bELIF\\b",
-			"end": "(?i)(?=\\bEND\\b)",
+			"begin": "\\b(?i:ELIF)\\b",
+			"end": "(?=\\b(?i:END)\\b)",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
 				{ "include": "#ELIF" },
@@ -47,36 +48,36 @@
 			]
 		},
 		"ELSE": {
-			"begin": "(?i)\\bELSE\\b",
-			"end": "(?i)(?=\\bEND\\b)",
+			"begin": "\\b(?i:ELSE)\\b",
+			"end": "(?=\\b(?i:END)\\b)",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [ { "include": "$self" } ]
 		},
 		"FOR": {
-			"begin": "(?i)\\bFOR\\b",
-			"end": "(?i)\\bEND\\b",
+			"begin": "\\b(?i:FOR)\\b",
+			"end": "\\b(?i:END)\\b",
 			"contentName": "loop.urclpp",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [ { "include": "$self" } ]
 		},
 		"WHILE": {
-			"begin": "(?i)\\bWHILE\\b",
-			"end": "(?i)\\bEND\\b",
+			"begin": "\\b(?i:WHILE)\\b",
+			"end": "\\b(?i:END)\\b",
 			"contentName": "loop.urclpp",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [ { "include": "$self" } ]
 		},
 		"EXIT": {
-			"match": "(?i)\\bEXIT\\b",
+			"match": "\\b(?i:EXIT)\\b",
 			"name": "keyword.control"
 		},
 		"SKIP": {
-			"match": "(?i)\\bSKIP\\b",
+			"match": "\\b(?i:SKIP)\\b",
 			"name": "keyword.control"
 		},
 		"SWITCH": {
-			"begin": "(?i)\\bSWITCH\\b",
-			"end": "(?i)\\bEND\\b",
+			"begin": "\\b(?i:SWITCH)\\b",
+			"end": "\\b(?i:END)\\b",
 			"captures": { "0": { "name": "keyword.control" } },
 			"patterns": [
 				{
@@ -87,15 +88,17 @@
 			]
 		},
 		"parenthesis": {
-			"match": "[()]",
-			"name": "entity.name.label"
+			"begin": "\\(",
+			"end": "\\)",
+			"captures": { "0": { "name": "parenthesis.urclpp" } },
+			"patterns": [ { "include": "$self" } ]
 		},
 		"label": {
 			"match": "(?<!\\w)(?>\\.\\w+)+",
 			"name": "support.function"
 		},
 		"invalid": {
-			"match": "(?i)EXIT|SKIP|DEFAULT|CASE",
+			"match": "\\b(?i:EXIT|SKIP|DEFAULT|CASE)\\b",
 			"name": "invalid"
 		}
 	}
