@@ -1200,6 +1200,7 @@ const DocumentSymbolProvider = {
 
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
+	{ scheme: 'file', language:	'urclpp'		},
 	{ scheme: 'file', language:	'.urcl'			},
 	{ scheme: 'file', language:	'.simple.urcl'	}
 ];
