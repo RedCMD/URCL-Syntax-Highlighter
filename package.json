@@ -41,7 +41,7 @@
 				"extensions": [
 					".urcl"
 				],
-				"configuration": "./urcl.language-configuration.json"
+				"configuration": "./language-configurations/urcl.language-configuration.json"
 			},
 			{
 				"id": ".simple.urcl",
@@ -55,7 +55,7 @@
 				"filenames": [
 					"URCL"
 				],
-				"configuration": "./urcl.language-configuration.json"
+				"configuration": "./language-configurations/urcl.language-configuration.json"
 			},
 			{
 				"id": "urclpp",
@@ -68,7 +68,7 @@
 				"filenames": [
 					"URCLPP"
 				],
-				"configuration": "./urclpp.language-configuration.json"
+				"configuration": "./language-configurations/urclpp.language-configuration.json"
 			},
 			{
 				"id": ".b",
@@ -78,7 +78,7 @@
 				"extensions": [
 					".b"
 				],
-				"configuration": "./language-configuration.json"
+				"configuration": "./language-configurations/language-configuration.json"
 			},
 			{
 				"id": ".tuk",
@@ -88,7 +88,7 @@
 				"extensions": [
 					".tuk"
 				],
-				"configuration": "./language-configuration.json"
+				"configuration": "./language-configurations/language-configuration.json"
 			}
 		],
 		"grammars": [

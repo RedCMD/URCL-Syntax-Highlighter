@@ -11,8 +11,14 @@
 		["FOR", "END"],
 		["WHILE", "END"],
 		["SWITCH", "END"],
+		["if", "end"],
+		["for", "end"],
+		["while", "end"],
+		["switch", "end"],
 		["(", ")"],
 		["[", "]"],
+		["'", "'"],
+		["\"","\""],
 		["/*", "*/"]
 	],
 	// symbols that are auto closed when typing
@@ -21,28 +27,10 @@
 		["FOR", "END"],
 		["WHILE", "END"],
 		["SWITCH", "END"],
-		["(", ")"],
-		["[", "]"],
-		["'", "'"],
-		["\"","\""],
-		["/*", "*/"]
-	],
-	// symbols that can be used to surround a selection
-	"surroundingPairs": [
-		["IF", "END"],
-		["FOR", "END"],
-		["WHILE", "END"],
-		["SWITCH", "END"],
-		["(", ")"],
-		["[", "]"],
-		["'", "'"],
-		["\"","\""]
-	],
-	"colorizedBracketPairs": [
-		["IF", "END"],
-		["FOR", "END"],
-		["WHILE", "END"],
-		["SWITCH", "END"],
+		["if", "end"],
+		["for", "end"],
+		["while", "end"],
+		["switch", "end"],
 		["(", ")"],
 		["[", "]"],
 		["'", "'"],
@@ -50,6 +38,23 @@
 		["/*", "*/"]
 	],
 	"autoCloseBefore": " \t\n",
+	// symbols that can be used to surround a selection
+	"surroundingPairs": [
+		["(", ")"],
+		["[", "]"],
+		["'", "'"],
+		["\"","\""]
+	],
+	// symbols that can be coloured
+	"colorizedBracketPairs": [
+		["if", "end"],
+		["for", "end"],
+		["while", "end"],
+		["switch", "end"],
+		["(", ")"],
+		["[", "]"],
+		["/*", "*/"]
+	],
 	"folding": {
 		"markers": {
 			"start": "^\\s*/\\*(?!.*\\*/).*$|^\\s*(IF|FOR|WHILE|SWITCH|if|for|while|switch)",
