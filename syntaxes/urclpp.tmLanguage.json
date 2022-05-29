@@ -19,6 +19,7 @@
 		{ "include": "#preprocessor"	},
 		{ "include": "#parenthesis"		},
 		{ "include": "#label"			},
+		{ "include": "#function"		},
 		{ "include": "#invalid"			},
 		{ "include": "source.redcmd.syntax.simple.urcl" }
 	],
@@ -86,6 +87,21 @@
 				},
 				{ "include": "$self" }
 			]
+		},
+		"function": {
+			"begin": "(\\w+(?>\\.\\w+)*)\\s*\\(",
+			"end": "\\)",
+			"beginCaptures": {
+				"1": {
+					"patterns": [
+						{
+							"match": "\\w+",
+							"name": "support.function regex"
+						}
+					]
+				}
+			},
+			"patterns": [ { "include": "$self" } ]
 		},
 		"parenthesis": {
 			"begin": "\\(",
