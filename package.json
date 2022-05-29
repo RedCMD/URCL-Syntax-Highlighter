@@ -63,7 +63,8 @@
 					"RedCMD.URCL++"
 				],
 				"extensions": [
-					".urclpp"
+					".urclpp",
+					".urcl++"
 				],
 				"filenames": [
 					"URCLPP"
