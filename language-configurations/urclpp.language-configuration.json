@@ -47,10 +47,6 @@
 	],
 	// symbols that can be coloured
 	"colorizedBracketPairs": [
-		["if", "end"],
-		["for", "end"],
-		["while", "end"],
-		["switch", "end"],
 		["(", ")"],
 		["[", "]"],
 		["/*", "*/"]
