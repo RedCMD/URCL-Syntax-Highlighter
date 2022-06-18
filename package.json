@@ -41,7 +41,11 @@
 				"extensions": [
 					".urcl"
 				],
-				"configuration": "./language-configurations/urcl.language-configuration.json"
+				"configuration": "./language-configurations/urcl.language-configuration.json",
+				"icon": {
+					"dark": "images/URCL-file-icon.svg",
+					"light": "images/URCL-file-icon.svg"
+				}
 			},
 			{
 				"id": ".simple.urcl",
@@ -55,7 +59,11 @@
 				"filenames": [
 					"URCL"
 				],
-				"configuration": "./language-configurations/urcl.language-configuration.json"
+				"configuration": "./language-configurations/urcl.language-configuration.json",
+				"icon": {
+					"dark": "images/URCL-file-icon.svg",
+					"light": "images/URCL-file-icon.svg"
+				}
 			},
 			{
 				"id": "urclpp",
@@ -69,7 +77,11 @@
 				"filenames": [
 					"URCLPP"
 				],
-				"configuration": "./language-configurations/urclpp.language-configuration.json"
+				"configuration": "./language-configurations/urclpp.language-configuration.json",
+				"icon": {
+					"dark": "images/URCL-file-icon.svg",
+					"light": "images/URCL-file-icon.svg"
+				}
 			},
 			{
 				"id": ".b",
