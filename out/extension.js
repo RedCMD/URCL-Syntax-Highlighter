@@ -587,7 +587,7 @@ function tokenizeDoc(document) {
 		/(?<label>\.\w*)/,
 		/(?<=^\s*)(?<define>@DEFINE)/,
 		/(?<macro>@\w*)/,
-		/(?<register>[R$]\d*)/,
+		/(?<register>\$\d*|R\d+)/,
 		/(?<numeric>~?[-+]?\d\w*)/,
 		/(?<memory>[#M]\d*)/,
 		/(?<=^\s*)(?<instruction_unknown>\w+)/,
@@ -1197,6 +1197,85 @@ const DocumentSymbolProvider = {
 // }
 
 
+const tokenTypesLegend = [
+	"namespace",	// 0  %port
+	"class",		// 1  %port
+	"enum",			// 2  %port
+	"interface",	// 3  %port
+	"struct",		// 4  %port
+	"typeParameter",// 5  %port
+	"type",			// 6  %port
+	"parameter",	// 7  $register
+	"variable",		// 8  $register
+	"property",		// 9  $register
+	"enumMember",	// 10 #memory
+	"decorator",	// 11 .label
+	"event",		// 12 $register
+	"function",		// 13 .label
+	"method",		// 14 .label
+	"macro",		// 15 instruction
+	"label",		// 16 @macro
+	"comment",		// 17 //comment
+	"string",		// 18 "string"
+	"keyword",		// 19 @macro
+	"number",		// 20 -numeric
+	"regexp",		// 21 
+	"operator"		// 22 =operators
+]
+const tokenModifiersLegend = [ // idk what this does/is for
+	"declaration",
+	"definition",
+	"readonly",
+	"static",
+	"deprecated",
+	"abstract",
+	"async",
+	"modification",
+	"documentation",
+	"defaultLibrary"
+]
+const SemanticTokensLegend = new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
+
+const DocumentSemanticTokensProvider = {
+	provideDocumentSemanticTokens(document, token) {
+		const tokens = tokenizeDoc(document)
+		const builder = new vscode.SemanticTokensBuilder()
+		let macros = []
+	
+		
+		while (token = tokens.shift())
+			if (token.name == 'define') {
+				token = tokens.shift()
+				if (token.name == 'word') {
+					let symbol = token.symbol
+					token = tokens.shift()
+					if (token.name == 'register' || token.name == 'numeric') {
+						let tokenType = token.name
+						macros.push({ symbol: symbol, type: tokenType })
+					}
+				}
+			} else if (token.name == 'macro') {
+				let macro = macros.find(element => element.symbol == token.symbol.substring(1)) // remove leading @ from symbol
+				// let macro = macros.find(t => (t.symbol == token.symbol.substring(1))) // remove leading @ from symbol
+				if (macro != undefined) {
+					// builder.push(token.range.start.line, token.range.start.character, token.range.end.character - token.range.start.character, 0, 0);
+					// vscode.window.showInformationMessage(JSON.stringify(macro.symbol))
+					builder.push(token.range.start.line, token.range.start.character + 1, token.range.end.character - token.range.start.character - 1, macro.type == 'register' ? 8 : 20, 0);
+					// builder.push(token.range.start.line, token.range.start.character + 1, token.range.end.character - token.range.start.character - 1, macro.type == 'register' ? parseInt(macro.symbol.substring(1)) : 20, 0);
+				}
+			}
+		
+		// vscode.window.showInformationMessage(JSON.stringify(builder.build()))
+		// vscode.window.showInformationMessage(JSON.stringify(macros))
+		
+		// builder.push(0, 0, 6, 0, 0);
+		
+
+		return builder.build()
+	}
+}
+
+
 
 const fileSelector = [
 	{ scheme: 'file', language:	'urcl'			},
@@ -1215,6 +1294,7 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(fileSelector, DocumentSymbolProvider)); // breadcrumbs
 	context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(fileSelector, DocumentHighlightProvider)); // highlight related symbols
+	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(fileSelector, DocumentSemanticTokensProvider, SemanticTokensLegend)); // @macro highlighting
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
 	// 	// vscode.window.showInformationMessage(JSON.stringify(event));
