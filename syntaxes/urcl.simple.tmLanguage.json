@@ -6,10 +6,10 @@
 		{ "include": "#comment-block"	},
 		{ "include": "#comment-line"	},
 		{ "include": "#square-bracket"	},
-		{ "include": "#angle-bracket"	},
 		{ "include": "#preprocessor"	},
 		{ "include": "#instruction"		},
 		{ "include": "#comparison"		},
+		{ "include": "#angle-bracket"	},
 		{ "include": "#seperator"		},
 		{ "include": "#register"		},
 		{ "include": "#memory"			},
@@ -73,7 +73,7 @@
 		},
 		"angle-bracket": {
 			"begin": "<",
-			"end": ">",
+			"end": ">|$",
 			"captures": { "0": { "name": "angle-bracket.urclpp" } },
 			"patterns": [ { "include": "$base" } ]
 		},
