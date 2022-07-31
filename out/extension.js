@@ -647,7 +647,7 @@ function getLabels(document, option) {
 	// option:2 only definition .labels
 	while (token = tokens.pop())
 		if ((option ^ 2 && token.name == 'label') || (option ^ 1 && token.name == 'label_define'))
-			labels.push({ document: document, range: token.range, symbol: token.symbol })
+			labels.push({ document: document, range: token.range, symbol: token.symbol, name: token.name })
 
 
 	// vscode.window.showInformationMessage(JSON.stringify(labels))
@@ -857,12 +857,14 @@ const DefinitionProvider = {
 		
 		if (regexlabel.test(hoveredWord)) {	// test if selected word is a .label
 			let labels = getLabels(document, 0)	// get a list of all labels in doc
+			let labelToken = getTokenAtPostion(range, labels)
 			let label
 			let locations = []
 			
 			while (label = labels.pop())
 				if (hoveredWord == label.symbol)	// test if .label in doc is same as selected .label
-					locations.push(new vscode.Location(document.uri, label.range))
+					if (label.name != labelToken.name || labelToken.name == 'label_define')	// Don't return the ogrinal .label
+						locations.push(new vscode.Location(document.uri, label.range))
 			
 			if (!locations)
 				locations.push(new vscode.Location(document.uri, range))
