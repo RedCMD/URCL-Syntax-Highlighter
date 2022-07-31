@@ -1277,24 +1277,24 @@ const DocumentSemanticTokensProvider = {
 
 
 
-const fileSelector = [
-	{ scheme: 'file', language:	'urcl'			},
-	{ scheme: 'file', language:	'urclpp'		},
-	{ scheme: 'file', language:	'.urcl'			},
-	{ scheme: 'file', language:	'.simple.urcl'	}
+const DocumentSelector = [
+	{ language: 'urcl' },
+	{ language: 'urclpp' },
+	{ language: '.urcl' },
+	{ language: '.simple.urcl' }
 ];
 // main()
 function activate(context) {
-	context.subscriptions.push(vscode.languages.registerHoverProvider(fileSelector, HoverProvider)); // Hovers
-	context.subscriptions.push(vscode.languages.registerRenameProvider(fileSelector, RenameProvider)); // rename related symbols
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider(fileSelector, CodelensProvider)); // overhead .label references
-	context.subscriptions.push(vscode.languages.registerReferenceProvider(fileSelector, ReferenceProvider)); // shift+F12 .label locations
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider(fileSelector, DefinitionProvider)); // ctrl+click .label definition(s)
+	context.subscriptions.push(vscode.languages.registerHoverProvider(DocumentSelector, HoverProvider)); // Hovers
+	context.subscriptions.push(vscode.languages.registerRenameProvider(DocumentSelector, RenameProvider)); // rename related symbols
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider(DocumentSelector, CodelensProvider)); // overhead .label references
+	context.subscriptions.push(vscode.languages.registerReferenceProvider(DocumentSelector, ReferenceProvider)); // shift+F12 .label locations
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider(DocumentSelector, DefinitionProvider)); // ctrl+click .label definition(s)
 	// context.subscriptions.push(vscode.languages.registerSignatureHelpProvider(fileSelector, SignatureHelpProvider, [' '])); // hover instruction definition
-	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(fileSelector, CompletionItemProvider)); // intellisense
-	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(fileSelector, DocumentSymbolProvider)); // breadcrumbs
-	context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(fileSelector, DocumentHighlightProvider)); // highlight related symbols
-	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(fileSelector, DocumentSemanticTokensProvider, SemanticTokensLegend)); // @macro highlighting
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(DocumentSelector, CompletionItemProvider)); // intellisense
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(DocumentSelector, DocumentSymbolProvider)); // breadcrumbs
+	context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(DocumentSelector, DocumentHighlightProvider)); // highlight related symbols
+	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(DocumentSelector, DocumentSemanticTokensProvider, SemanticTokensLegend)); // @macro highlighting
 
 	// vscode.workspace.onDidChangeTextDocument(event => {
 	// 	// vscode.window.showInformationMessage(JSON.stringify(event));
