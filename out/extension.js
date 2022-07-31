@@ -1250,10 +1250,12 @@ const DocumentSemanticTokensProvider = {
 				token = tokens.shift()
 				if (token.name == 'word') {
 					let symbol = token.symbol
+					let range = token.range
 					token = tokens.shift()
 					if (token.name == 'register' || token.name == 'numeric') {
 						let tokenType = token.name
 						macros.push({ symbol: symbol, type: tokenType })
+						builder.push(range.start.line, range.start.character, range.end.character - range.start.character, tokenType == 'register' ? 8 : 20, 0);
 					}
 				}
 			} else if (token.name == 'macro') {
