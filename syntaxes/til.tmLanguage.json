@@ -1,0 +1,20 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Tukes Intermediate Language URCL Syntax",
+	"scopeName": "source.redcmd.syntax.til",
+	"patterns": [
+		{ "include": "#instruction" },
+		{ "include": "#numeric" },
+		{ "include": "source.redcmd.syntax.simple.urcl" }
+	],
+	"repository": {
+		"instruction": {
+			"match": "\\b(?i:PUSH|HALT|DEF-VAR|PRINT-(?:INT|STR)|(?:STACK-)?(?:ADD|SUB|MLT|DIV|MOD|BR[CEGLNPZ]|BN[CZ]|B[GLN]E|BS[LR]|AND|X?OR|JMP|STORE|LOAD|CALL|IN|OUT))\\b",
+			"name": "keyword.til"
+		},
+		"numeric": {
+			"match": "\\d[\\d.]*\\b",
+			"name": "constant.numeric.til"
+		}
+	}
+}

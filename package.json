@@ -102,6 +102,16 @@
 					".tuk"
 				],
 				"configuration": "./language-configurations/language-configuration.json"
+			},
+			{
+				"id": "til",
+				"aliases": [
+					"Tukes Intermediate Language"
+				],
+				"extensions": [
+					".til"
+				],
+				"configuration": "./language-configurations/urcl.language-configuration.json"
 			}
 		],
 		"grammars": [
@@ -129,6 +139,11 @@
 				"language": ".tuk",
 				"scopeName": "source.redcmd.syntax.tuk",
 				"path": "./syntaxes/tuk.tmLanguage.json"
+			},
+			{
+				"language": "til",
+				"scopeName": "source.redcmd.syntax.til",
+				"path": "./syntaxes/til.tmLanguage.json"
 			}
 		],
 		"snippets": [
