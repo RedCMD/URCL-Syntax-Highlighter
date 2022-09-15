@@ -40,7 +40,7 @@
 			"name": "keyword.control"
 		},
 		"instruction": {
-			"match": "\\b(?i:ADD|BEV|BN[CZ]|BOD|BR[CENPZ]|BS[LSR]|B[GLN]E|CAL|CPY|DEC|D[DQW]|[HM]LT|IMM|INC?|JMP|LL?OD|[LRP]SH|L?STR|MO[DV]|N?AND|NEG|NO[PT]|OUT|POP|RET|SETN?[CE]|SRS|SUB|S?(?>DIV|BR[GL]|B[GL]E|SET[GL]E?)|X?N?OR)\\b",
+			"match": "\\b(?i:ADD|BEV|BN[CZ]|BOD|BR[CENPZ]|BS[LSR]|B[GLN]E|CAL|CPY|DEC|D[DQW]|[HM]LT|IMM|ABS|INC?|JMP|LL?OD|[LRP]SH|L?STR|MO[DV]|N?AND|NEG|NO[PT]|OUT|POP|RET|SETN?[CE]|SRS|SUB|S?(?>DIV|BR[GL]|B[GL]E|SET[GL]E?)|X?N?OR)\\b",
 			"name": "keyword"
 		},
 		"instruction??": {

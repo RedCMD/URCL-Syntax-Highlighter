@@ -539,6 +539,13 @@ const HoverWords = [
 		operands: [["Register", "Macro"], ["Register", "Macro"], ["Register", "Immediate", "Label", "Macro"]],
 		description: '"Does a bitwise XOR of two values, then it stores the result in a register."',
 	},
+	{
+		symbol: "ABS",
+		name: "Absolute value",
+		example: "ABS R1 R2",
+		operands:  [["Register", "Macro"], ["Register", "Immediate", "Label", "Macro"]],
+		description: '"Gets the absolute value of a value, then stores the result in a register."'
+	}
 ]
 
 
@@ -580,7 +587,7 @@ function tokenizeDoc(document) {
 		/(?<comment_block>\/\*[\S\s]*?\*\/)/,
 		/(?<string>"[^"\r\n]*")/,
 		/(?<char>'[^'\r\n]*')/,
-		/(?<=^\s*)(?<instruction>ADD|AND|BEV|BGE|BLE|BNC|BNE|BNZ|BOD|BRC|BRE|BRG|BRL|BRN|BRP|BRZ|BSL|BSR|BSS|CAL|CPY|DEC|DIV|HLT|IMM|IN|INC|JMP|LLOD|LOD|LSH|LSTR|MLT|MOD|MOV|NAND|NEG|NOP|NOR|NOT|OR|OUT|POP|PSH|RET|RSH|SETC|SETE|SETG|SETGE|SETL|SETLE|SETNC|SETNE|SRS|STR|SUB|XNOR|XOR)/,
+		/(?<=^\s*)(?<instruction>ADD|AND|BEV|BGE|BLE|BNC|BNE|BNZ|BOD|BRC|BRE|BRG|BRL|BRN|BRP|BRZ|BSL|BSR|BSS|CAL|CPY|DEC|DIV|HLT|IMM|IN|INC|JMP|LLOD|LOD|LSH|LSTR|MLT|MOD|MOV|NAND|NEG|NOP|NOR|NOT|OR|OUT|POP|PSH|RET|RSH|SETC|SETE|SETG|SETGE|SETL|SETLE|SETNC|SETNE|SRS|STR|SUB|XNOR|XOR|ABS)/,
 		/(?<=^\s*)(?<dw>DW)/,
 		/(?<=^\s*)(?<header>BITS|RUN|MINREG|MINHEAP|MINSTACK)/,
 		/(?<=^\s*)(?<label_define>\.\w*)/,
