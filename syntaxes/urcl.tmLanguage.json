@@ -87,7 +87,7 @@
 			}
 		},
 		"instruction": {
-			"match": "(?i)HLT|NOP|RET|D[DQW](.*)|POP(.*)|(?:CAL|JMP|PSH)(.*)|IMM(.*)|(?:DEC|INC|[LR]SH|NEG|NOT|SRS)(.*)|B(?:EV|NZ|OD|R[NPZ])(.*)|MOV(.*)|STR(.*)|CPY(.*)|LOD(.*)|IN(.*)|OUT(.*)|(?:ADD|BS[LSR]|S?DIV|LLOD|MLT|MOD|N?AND|S?SET[GL]E?|SETN?[CE]|SUB|X?N?OR)(.*)|(?:BN[EC]|BR[CE]|S?B[GL]E|S?BR[GL]|LSTR)(.*)|(?:DBLE_BGE)(.*)|(BRA|BZ[NR])",
+			"match": "(?i)HLT|NOP|RET|D[DQW](.*)|POP(.*)|(?:CAL|JMP|PSH)(.*)|IMM(.*)|(?:DEC|INC|[LR]SH|NEG|NOT|SRS|ABS)(.*)|B(?:EV|NZ|OD|R[NPZ])(.*)|MOV(.*)|STR(.*)|CPY(.*)|LOD(.*)|IN(.*)|OUT(.*)|(?:ADD|BS[LSR]|S?DIV|LLOD|MLT|MOD|N?AND|S?SET[GL]E?|SETN?[CE]|SUB|X?N?OR)(.*)|(?:BN[EC]|BR[CE]|S?B[GL]E|S?BR[GL]|LSTR)(.*)|(?:DBLE_BGE)(.*)|(BRA|BZ[NR])",
 			"captures": {
 				"0":  { "name": "keyword" },
 				"1":  { "patterns": [ { "include": "#instruction-A"					}, { "include": "#invalid-illegal" } ] },
