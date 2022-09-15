@@ -1,4 +1,10 @@
 {
+	"ABS": {
+		"description": "Abs, 2 Opperands: ABS R1 R2|2. Gets the absolute value of a value",
+		"prefix": "ABS",
+		"body": "ABS\t${1|R,$|}${2:1}\t${1|R,$|}${3:2}$0",
+		"comment": "ABS R1 R2 - ABS R1 2"
+	},
 	"ADD": {
 		"description": "Add, 3 Opperands: ADD R1 R2|2 R3|3. Adds two values together, then it stores the result in a register.",
 		"prefix": "ADD",
