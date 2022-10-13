@@ -59,6 +59,7 @@
 				"filenames": [
 					"URCL"
 				],
+				"firstLine": "^\\s*(BITS|RUN|MIN(HEAP|REG|STACK))\\s",
 				"configuration": "./language-configurations/urcl.language-configuration.json",
 				"icon": {
 					"dark": "images/URCL-file-icon.svg",
