@@ -1,0 +1,795 @@
+[
+  {
+    "type": "BITS",
+    "named": true,
+    "fields": {
+      "comparison": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "<=",
+            "named": false
+          },
+          {
+            "type": "==",
+            "named": false
+          },
+          {
+            "type": ">=",
+            "named": false
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "DW",
+    "named": true,
+    "fields": {
+      "label": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "label",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "array",
+            "named": true
+          },
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "MINHEAP",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "MINREG",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "MINSTACK",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "RUN",
+    "named": true,
+    "fields": {
+      "header_type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "RUN",
+            "named": false
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "RAM",
+            "named": false
+          },
+          {
+            "type": "ROM",
+            "named": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "array",
+    "named": true,
+    "fields": {
+      "item": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "array",
+            "named": true
+          },
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "char",
+    "named": true,
+    "fields": {
+      "content": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char_value",
+            "named": true
+          },
+          {
+            "type": "escape_sequence",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "escape_sequence",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "char_escape",
+            "named": true
+          },
+          {
+            "type": "hex_escape",
+            "named": true
+          },
+          {
+            "type": "unicode_escape",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "instruction",
+    "named": true,
+    "fields": {
+      "label": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "label",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          }
+        ]
+      },
+      "operand": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "char",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "label",
+            "named": true
+          },
+          {
+            "type": "macro",
+            "named": true
+          },
+          {
+            "type": "memory",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "placeholder",
+            "named": true
+          },
+          {
+            "type": "port",
+            "named": true
+          },
+          {
+            "type": "program_counter",
+            "named": true
+          },
+          {
+            "type": "register",
+            "named": true
+          },
+          {
+            "type": "relative",
+            "named": true
+          },
+          {
+            "type": "stack_pointer",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "label",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "placeholder",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "fields": {
+      "define_word": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "DW",
+            "named": true
+          }
+        ]
+      },
+      "header": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "BITS",
+            "named": true
+          },
+          {
+            "type": "MINHEAP",
+            "named": true
+          },
+          {
+            "type": "MINREG",
+            "named": true
+          },
+          {
+            "type": "MINSTACK",
+            "named": true
+          },
+          {
+            "type": "RUN",
+            "named": true
+          }
+        ]
+      },
+      "inst": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "instruction",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string",
+    "named": true,
+    "fields": {
+      "content": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "escape_sequence",
+            "named": true
+          },
+          {
+            "type": "string_segment",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<=",
+    "named": false
+  },
+  {
+    "type": "==",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": ">=",
+    "named": false
+  },
+  {
+    "type": "BITS",
+    "named": false
+  },
+  {
+    "type": "DW",
+    "named": false
+  },
+  {
+    "type": "MINHEAP",
+    "named": false
+  },
+  {
+    "type": "MINREG",
+    "named": false
+  },
+  {
+    "type": "MINSTACK",
+    "named": false
+  },
+  {
+    "type": "RAM",
+    "named": false
+  },
+  {
+    "type": "ROM",
+    "named": false
+  },
+  {
+    "type": "RUN",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
+    "named": false
+  },
+  {
+    "type": "\\U",
+    "named": false
+  },
+  {
+    "type": "\\U{",
+    "named": false
+  },
+  {
+    "type": "\\u",
+    "named": false
+  },
+  {
+    "type": "\\u{",
+    "named": false
+  },
+  {
+    "type": "\\x",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "char_escape",
+    "named": true
+  },
+  {
+    "type": "char_value",
+    "named": true
+  },
+  {
+    "type": "comment",
+    "named": true
+  },
+  {
+    "type": "hex_escape",
+    "named": true
+  },
+  {
+    "type": "identifier",
+    "named": true
+  },
+  {
+    "type": "macro",
+    "named": true
+  },
+  {
+    "type": "memory",
+    "named": true
+  },
+  {
+    "type": "number",
+    "named": true
+  },
+  {
+    "type": "port",
+    "named": true
+  },
+  {
+    "type": "program_counter",
+    "named": true
+  },
+  {
+    "type": "register",
+    "named": true
+  },
+  {
+    "type": "relative",
+    "named": true
+  },
+  {
+    "type": "stack_pointer",
+    "named": true
+  },
+  {
+    "type": "string_segment",
+    "named": true
+  },
+  {
+    "type": "unicode_escape",
+    "named": true
+  },
+  {
+    "type": "}",
+    "named": false
+  }
+]

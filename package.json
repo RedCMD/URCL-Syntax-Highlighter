@@ -9,6 +9,9 @@
 		"url": "https://github.com/RedCMD/URCL-Syntax-Highlighter.git"
 	},
 	"icon": "images/URCL-logo-icon.png",
+	"extensionDependencies": [
+		"pokey.parse-tree"
+	],
 	"engines": {
 		"vscode": "^1.43.0"
 	},
