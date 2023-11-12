@@ -150,31 +150,31 @@
 		"snippets": [
 			{
 				"language": ".urcl",
-				"path": "./snippets/urcl.json"
+				"path": "./snippets/urcl.code-snippets"
 			},
 			{
 				"language": ".urcl",
-				"path": "./snippets/urcl-instructions.json"
+				"path": "./snippets/urcl-instructions.code-snippets"
 			},
 			{
 				"language": ".simple.urcl",
-				"path": "./snippets/urcl.json"
+				"path": "./snippets/urcl.code-snippets"
 			},
 			{
 				"language": ".simple.urcl",
-				"path": "./snippets/urcl-instructions.json"
+				"path": "./snippets/urcl-instructions.code-snippets"
 			},
 			{
 				"language": "urclpp",
-				"path": "./snippets/urcl.json"
+				"path": "./snippets/urcl.code-snippets"
 			},
 			{
 				"language": "urclpp",
-				"path": "./snippets/urcl-instructions.json"
+				"path": "./snippets/urcl-instructions.code-snippets"
 			},
 			{
 				"language": ".tuk",
-				"path": "./snippets/tuk.json"
+				"path": "./snippets/tuk.code-snippets"
 			}
 		],
 		"colors": [
