@@ -25,11 +25,6 @@
 		"Snippets",
 		"Other"
 	],
-	"activationEvents": [
-		"onLanguage:.urcl",
-		"onLanguage:urclpp",
-		"onLanguage:.simple.urcl"
-	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"languages": [

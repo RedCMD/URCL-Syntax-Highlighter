@@ -4,7 +4,7 @@
 	"scopeName": "source.redcmd.syntax.urclpp",
 	"injections": {
 		"L:loop.urclpp": {
-			"comment": "Injectins will inject themselves into every nested level of the target scope",
+			"comment": "Injections will inject themselves into every nested level of the target scope",
 			"patterns": [
 				{ "include": "#EXIT" },
 				{ "include": "#SKIP" }
