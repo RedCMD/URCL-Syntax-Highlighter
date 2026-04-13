@@ -8,10 +8,10 @@ Syntax Highlighting and Snippets for URCL, B and Tuk languages
 
 
 ## Features
-Highlights URCL based instructions, headers, macros, labels, opperands and comments.  
+Highlights URCL based instructions, headers, macros, labels, operands and comments.  
 Adds snippets for all instructions and headers. (Use tab to cycle through)  
-Only highlights opperands based on their position relative to the instruction.  
-Will try its hardest to find the correct opperand within the whitespaces.  
+Only highlights operands based on their position relative to the instruction.  
+Will try its hardest to find the correct operand within the whitespaces.  
 All invalid code is highlighted in red.  
 ![example-urcl-code](https://cdn.discordapp.com/attachments/533946600607711232/868965880195870781/example-urcl-code.png)
 
