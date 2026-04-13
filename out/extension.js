@@ -686,7 +686,7 @@ const HoverProvider = {
 		if (HoverWordObject) {
 			const operands = HoverWordObject.operands.length
 			markdownString.appendCodeblock(HoverWordObject.example, '.urcl')
-			markdownString.appendCodeblock(HoverWordObject.name + (operands ? ': ' + operands + ' Opperand' + (operands > 1 ? 's' : '') : ''), 'plaintext')
+			markdownString.appendCodeblock(HoverWordObject.name + (operands ? ': ' + operands + ' Operand' + (operands > 1 ? 's' : '') : ''), 'plaintext')
 			markdownString.appendCodeblock(HoverWordObject.description, '.simple.urcl')
 			
 			// vscode.window.showInformationMessage(JSON.stringify(HoverWordObject))
